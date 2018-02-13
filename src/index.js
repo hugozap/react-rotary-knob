@@ -8,12 +8,24 @@
 import React, { Component } from "react";
 import * as d3 from "d3";
 import * as u from "./utils";
-import uuid from 'uuid'
+import uuid from 'uuid';
+import {Samy, SvgProxy} from 'react-samy-svg';
+import defaultSkin from './knobdefaultskin'
 
+/**
+ * A skin consists of the svg code
+ * and the knob element centerx and y (knobX, knobY)
+ */
+type Skin = {
+  svg: string,
+  knobX: number,
+  knobY: number
+}
 type KnobProps = {
   value: number,
   min: number,
   max: number,
+  skin: Skin,
   onChange: (val: number) => void 
 };
 
@@ -30,7 +42,8 @@ class Knob extends Component<KnobProps, KnobState> {
   };
   
   static defaultProps = {
-    onChange: function() {}
+    onChange: function() {},
+    skin: defaultSkin
   }
   componentDidMount() {}
 
@@ -41,7 +54,7 @@ class Knob extends Component<KnobProps, KnobState> {
   }
 
   render() {
-    const { value, min, max, onChange, ...rest } = this.props;
+    const { value, min, max, onChange, skin, ...rest } = this.props;
     const scale = d3
       .scaleLinear()
       .domain([min, max])
@@ -54,24 +67,24 @@ class Knob extends Component<KnobProps, KnobState> {
       this.props.onChange(domainValue);
     };
     return (
-      <svg ref={this.saveRef.bind(this)} {...rest}>
+      <Samy svgXML={skin.svg} onSVGReady={this.saveRef.bind(this)} {...rest}>
         {this.state.svgRef && (
           <RotateView
             svg={this.state.svgRef}
-            r={40}
             angle={angle}
-            cx={50}
-            cy={50}
+            cx={100}
+            cy={100}
             onAngleChange={onAngleChange}
           />
         )}
-      </svg>
+        <SvgProxy selector="#knob" transform={`$ORIGINAL rotate(${angle}, ${skin.knobX}, ${skin.knobY})`}/>
+        <SvgProxy selector="tspan">{value}</SvgProxy>
+      </Samy>
     );
   }
 }
 
 type RotateViewProps = {
-  r: number,
   angle: number,
   cx: number,
   cy: number,
@@ -105,42 +118,8 @@ class RotateView extends Component<RotateViewProps> {
   renderControls(props: RotateViewProps) {
     const { r, cx, cy, angle } = props;
     const svgRef = d3.select(props.svg || ".main-svg");
-    let container = svgRef.select(this.controlSelector);
-    if (container.node() == null) {
-      container = svgRef
-        .append("g")
-        .classed("rotate-controls-" + this.controlId, true);
-    }
-    //container.selectAll("*").remove();
-    //outer circle
-    let outer = container.select(".rotate-circle");
-    if (!outer.node()) {
-      outer = container.append("circle").classed("rotate-circle", true);
-    }
-
-    outer
-      .attr("cx", cx)
-      .attr("cy", cy)
-      .attr("fill", "#D7D4D4")
-      .attr("stroke", "black")
-      .attr("stroke-width", "2")
-      .attr("r", r);
-
-    //angle drag handle
-    const hx = r * Math.cos(u.toRadians(angle));
-    const hy = r * Math.sin(u.toRadians(angle));
-
-    let handle = container.select(".handle");
-    if (!handle.node()) {
-      handle = container.append("circle").classed("handle", true);
-    }
-
-    handle
-      .attr("cx", hx + cx)
-      .attr("cy", hy + cy)
-      .attr("r", 8)
-      .attr("fill", "green");
-
+    let container = svgRef.select('#knob');
+    
     this.setupDragging(container);
   }
 

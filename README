@@ -1,0 +1,17 @@
+# [WIP] React Rotary Knob
+
+[Demo](https://github.io/hugozap/react-rotary-knob/storybook)
+
+(Work in progress, please come back in a few days)
+
+
+Precise rotary knob for React
+
+## Features
+
+- Drag away from knob to increase precision.
+- Skinnable with SVG
+
+### TODO
+
+* Mobile touch events
