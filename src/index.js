@@ -63,6 +63,7 @@ class Knob extends Component<KnobProps, KnobState> {
 
     const onAngleChange = angle => {
       //Calculate domain value
+      console.log(angle)
       let domainValue = scale.invert(angle);
       this.props.onChange(domainValue);
     };
@@ -78,7 +79,7 @@ class Knob extends Component<KnobProps, KnobState> {
           />
         )}
         <SvgProxy selector="#knob" transform={`$ORIGINAL rotate(${angle}, ${skin.knobX}, ${skin.knobY})`}/>
-        <SvgProxy selector="tspan">{value}</SvgProxy>
+        <SvgProxy selector="tspan">{value.toFixed(2)}</SvgProxy>
       </Samy>
     );
   }
