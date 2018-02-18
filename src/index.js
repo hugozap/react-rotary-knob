@@ -33,6 +33,26 @@ type KnobState = {
   svgRef: any
 };
 
+type InternalInputProps = {
+  min:number,
+  max:number,
+  value: number,
+  step: ?number,
+  onChange:()=>void
+}
+const InternalInput = (props:InternalInputProps)=>{
+
+  const step = props.step || 'any'
+  const style = {
+
+  }
+
+  function onChange(ev) {
+    props.onChange(Number(ev.target.value))
+  }
+  return <input value={props.value} step={step} onChange={onChange} style={style} type="range" min={props.min} max={props.max}/>
+}
+
 /**
  * Generic knob component
  */
@@ -67,6 +87,10 @@ class Knob extends Component<KnobProps, KnobState> {
       let domainValue = scale.invert(angle);
       this.props.onChange(domainValue);
     };
+
+    const onFormControlChange = newVal => {
+      this.props.onChange(newVal);
+    }
     return (
       <Samy svgXML={skin.svg} onSVGReady={this.saveRef.bind(this)} {...rest}>
         {this.state.svgRef && (
@@ -80,6 +104,7 @@ class Knob extends Component<KnobProps, KnobState> {
         )}
         <SvgProxy selector="#knob" transform={`$ORIGINAL rotate(${angle}, ${skin.knobX}, ${skin.knobY})`}/>
         <SvgProxy selector="tspan">{value.toFixed(2)}</SvgProxy>
+        <InternalInput value={value} min={min} max={max} onChange={onFormControlChange} />
       </Samy>
     );
   }
