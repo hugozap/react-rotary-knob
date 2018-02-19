@@ -32,28 +32,34 @@ type InternalInputProps = {
   max:number,
   value: number,
   step: ?number,
+  inputRef: (elem:any) => void,
   onChange:()=>void
 }
-const InternalInput = (props:InternalInputProps)=>{
 
+class InternalInput extends React.Component<InternalInputProps> {
+  render() {
+      const props = this.props;
+      const hideStyle = {
 
-  const hideStyle = {
+      }
 
+      function onValChange(ev) {
+        props.onChange(Number(ev.target.value))
+      }
+
+      const {value, min, max, step, onChange, inputRef,  ...rest} = props;
+      return <input ref={inputRef} value={value} step={step || '1'} onChange={onValChange} style={hideStyle} type="range" min={min} max={max} {...rest}/>
   }
-
-  function onValChange(ev) {
-    props.onChange(Number(ev.target.value))
-  }
-
-  const {value, min, max, step, onChange, ...rest} = props;
-  return <input value={value} step={step || '1'} onChange={onValChange} style={hideStyle} type="range" min={min} max={max} {...rest}/>
 }
+
+
 
 type KnobProps = {
   value: number,
   min: number,
   max: number,
   skin: Skin,
+  format: ?(val:number) => string,
   onChange: (val: number) => void 
 };
 
@@ -68,14 +74,13 @@ class Knob extends Component<KnobProps, KnobState> {
   
   static defaultProps = {
     onChange: function() {},
-    skin: defaultSkin
+    skin: defaultSkin,
+    format: (val:number) => {
+      return val.toFixed(0);
+    }
   }
   componentDidMount() {
-    
-
-    setTimeout(()=>{
-      this.setupDragging(d3.select(this.container))      
-    },0)
+    this.setupDragging(d3.select(this.container));      
   }
 
   componentWillReceiveProps(nextProps) {
@@ -101,6 +106,7 @@ class Knob extends Component<KnobProps, KnobState> {
 
   saveParentRef(container) {
     this.container = container;
+    
   }
 
   onAngleChanged(angle) {
@@ -148,6 +154,8 @@ class Knob extends Component<KnobProps, KnobState> {
 
       function ended() {
         elem.classed("dragging", false);
+        //focus input so it can be moved with arrows
+        self.inputRef.focus();
       }
     }
 
@@ -170,12 +178,8 @@ class Knob extends Component<KnobProps, KnobState> {
 
   render() {
 
-    const { value, min, max, onChange, skin, style, ...rest } = this.props;
-    console.log(`render ${value}`)
+    const { value, min, max, onChange, skin, style, format, ...rest } = this.props;
     const angle = this.scale(value);
-
-
-
     const onFormControlChange = newVal => {
       console.log('input control changed: ' +newVal);
       this.props.onChange(newVal);
@@ -199,12 +203,12 @@ class Knob extends Component<KnobProps, KnobState> {
     return (
       <React.Fragment>
       <div ref={this.saveParentRef.bind(this)} style={styles.container} {...rest}>
-        <InternalInput style={styles.input} value={value} min={min} max={max} onChange={onFormControlChange} />
+        <InternalInput inputRef={(input)=>{this.inputRef = input}} style={styles.input} value={value} min={min} max={max} onChange={onFormControlChange} />
         
         <Samy width="100%" height="100%" svgXML={skin.svg} onSVGReady={this.saveRef.bind(this)} >
           
           <SvgProxy selector="#knob" transform={`$ORIGINAL rotate(${angle}, ${skin.knobX}, ${skin.knobY})`}/>
-          <SvgProxy selector="tspan">{value.toFixed(2)}</SvgProxy>
+          <SvgProxy selector="tspan">{this.props.format(value)}</SvgProxy>
         </Samy>
         
       </div>
@@ -212,8 +216,6 @@ class Knob extends Component<KnobProps, KnobState> {
           <RotateView
             svg={this.state.svgRef}
             angle={angle}
-            cx={100}
-            cy={100}
           />
         )}
         
@@ -224,8 +226,6 @@ class Knob extends Component<KnobProps, KnobState> {
 
 type RotateViewProps = {
   angle: number,
-  cx: number,
-  cy: number,
   onAngleChange: (angle: number) => void,
   svg: any
 };
