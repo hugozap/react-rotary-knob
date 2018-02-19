@@ -65,7 +65,6 @@ function toGlobalCoordinates(svgdoc: any, elem: any, x: number, y: number) {
     const quadrant = getQuadrant(x, y);
     console.log('quadrant', quadrant)
     let realAngle = angleDeg;
-    console.log('angleDeg raw', angleDeg);  
   
        if( quadrant === 1 ) {
          realAngle = 90 - realAngle;

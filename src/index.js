@@ -21,13 +21,7 @@ type Skin = {
   knobX: number,
   knobY: number
 }
-type KnobProps = {
-  value: number,
-  min: number,
-  max: number,
-  skin: Skin,
-  onChange: (val: number) => void 
-};
+
 
 type KnobState = {
   svgRef: any
@@ -42,19 +36,27 @@ type InternalInputProps = {
 }
 const InternalInput = (props:InternalInputProps)=>{
 
-  //using 'any' produces inconsistent behavior
-  //when going to the max and back to the min the
-  //values are not the same
-  const step = props.step || '1'
+
   const hideStyle = {
 
   }
 
-  function onChange(ev) {
+  function onValChange(ev) {
     props.onChange(Number(ev.target.value))
   }
-  return <input value={props.value} step={step} onChange={onChange} style={hideStyle} type="range" min={props.min} max={props.max}/>
+
+  const {value, min, max, step, onChange, ...rest} = props;
+  return <input value={value} step={step || '1'} onChange={onValChange} style={hideStyle} type="range" min={min} max={max} {...rest}/>
 }
+
+type KnobProps = {
+  value: number,
+  min: number,
+  max: number,
+  skin: Skin,
+  onChange: (val: number) => void 
+};
+
 
 /**
  * Generic knob component
@@ -72,7 +74,7 @@ class Knob extends Component<KnobProps, KnobState> {
     
 
     setTimeout(()=>{
-      this.setupDragging(d3.select(container))      
+      this.setupDragging(d3.select(this.container))      
     },0)
   }
 
@@ -114,8 +116,13 @@ class Knob extends Component<KnobProps, KnobState> {
     }
     // Add dragging behavior to selector element
     var self = this;
-    const cx = 100;
-    const cy = 100;
+    const box = elem.node().getBoundingClientRect();
+    const cx = box.width / 2;
+    const cy = box.height / 2;
+    console.log('cx', cx)
+    console.log('cy', cy)
+    console.log('box', box);
+
     let { value } = this.props;
     const initialAngle = this.scale(value);
     
@@ -123,7 +130,7 @@ class Knob extends Component<KnobProps, KnobState> {
     function started() {
       elem.classed("dragging", true);
       d3.event.on("drag", dragged).on("end", ended);
-
+      console.log('d3.event', d3.event);
       //change will be relative to starting point for greater precision
       const startPos = { x: d3.event.x - cx, y: d3.event.y - cy };
       const startAngle = u.getAngleForPoint(startPos.x, startPos.y);
@@ -131,8 +138,6 @@ class Knob extends Component<KnobProps, KnobState> {
       let lastAngle = u.getAngleForPoint(lastPos.x, lastPos.y);
 
       function dragged() {
-        console.log('d3.event', d3.event)
-        console.log('d3.touch', d3.touch(elem))
         let currentPos = { x: d3.event.x - cx, y: d3.event.y - cy };
         let currentAngle = u.getAngleForPoint(currentPos.x, currentPos.y);
         const deltaAngle = currentAngle - startAngle;
@@ -146,7 +151,13 @@ class Knob extends Component<KnobProps, KnobState> {
       }
     }
 
-    elem.call(d3.drag().on("start", started));
+    const drag = d3.drag();
+    //Change the container to the element itself so the
+    //event.x and y are relative to the element , not its parent
+    drag.container(function(){
+      return elem.node();
+    })
+    elem.call(drag.on("start", started));
   }
 
   componentWillMount() {
@@ -169,14 +180,33 @@ class Knob extends Component<KnobProps, KnobState> {
       console.log('input control changed: ' +newVal);
       this.props.onChange(newVal);
     }
+
+    const styles = {
+      container: {
+        width:'50px',
+        height:'50px',
+        overflow:'hidden',
+        position: 'relative',
+      },
+      input: {
+        width:'50%',
+        position: 'absolute',
+        top:'0',
+        left:'50%'
+
+      }
+    }
     return (
       <React.Fragment>
-      <div ref={this.saveParentRef.bind(this)}>
-      <Samy svgXML={skin.svg} onSVGReady={this.saveRef.bind(this)} {...rest}>
+      <div ref={this.saveParentRef.bind(this)} style={styles.container} {...rest}>
+        <InternalInput style={styles.input} value={value} min={min} max={max} onChange={onFormControlChange} />
         
-        <SvgProxy selector="#knob" transform={`$ORIGINAL rotate(${angle}, ${skin.knobX}, ${skin.knobY})`}/>
-        <SvgProxy selector="tspan">{value.toFixed(2)}</SvgProxy>
-      </Samy>
+        <Samy width="100%" height="100%" svgXML={skin.svg} onSVGReady={this.saveRef.bind(this)} >
+          
+          <SvgProxy selector="#knob" transform={`$ORIGINAL rotate(${angle}, ${skin.knobX}, ${skin.knobY})`}/>
+          <SvgProxy selector="tspan">{value.toFixed(2)}</SvgProxy>
+        </Samy>
+        
       </div>
       {this.state.svgRef && (
           <RotateView
@@ -186,7 +216,6 @@ class Knob extends Component<KnobProps, KnobState> {
             cy={100}
           />
         )}
-        <InternalInput value={value} min={min} max={max} onChange={onFormControlChange} />
         
       </React.Fragment>
     );
