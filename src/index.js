@@ -42,15 +42,18 @@ type InternalInputProps = {
 }
 const InternalInput = (props:InternalInputProps)=>{
 
-  const step = props.step || 'any'
-  const style = {
+  //using 'any' produces inconsistent behavior
+  //when going to the max and back to the min the
+  //values are not the same
+  const step = props.step || '1'
+  const hideStyle = {
 
   }
 
   function onChange(ev) {
     props.onChange(Number(ev.target.value))
   }
-  return <input value={props.value} step={step} onChange={onChange} style={style} type="range" min={props.min} max={props.max}/>
+  return <input value={props.value} step={step} onChange={onChange} style={hideStyle} type="range" min={props.min} max={props.max}/>
 }
 
 /**
@@ -74,11 +77,14 @@ class Knob extends Component<KnobProps, KnobState> {
   }
 
   render() {
+
     const { value, min, max, onChange, skin, ...rest } = this.props;
+    console.log(`render ${value}`)
+    
     const scale = d3
       .scaleLinear()
       .domain([min, max])
-      .range([0, 360]);
+      .range([0, 359]);
     const angle = scale(value);
 
     const onAngleChange = angle => {
@@ -89,6 +95,7 @@ class Knob extends Component<KnobProps, KnobState> {
     };
 
     const onFormControlChange = newVal => {
+      console.log('input control changed: ' +newVal);
       this.props.onChange(newVal);
     }
     return (
