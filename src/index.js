@@ -192,7 +192,7 @@ class Knob extends Component<KnobProps, KnobState> {
         width:'50%',
         position: 'absolute',
         top:'0',
-        left:'50%'
+        left:'-100%'
 
       }
     }
