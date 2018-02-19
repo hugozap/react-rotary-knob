@@ -170,7 +170,7 @@ class Knob extends Component<KnobProps, KnobState> {
 
   render() {
 
-    const { value, min, max, onChange, skin, ...rest } = this.props;
+    const { value, min, max, onChange, skin, style, ...rest } = this.props;
     console.log(`render ${value}`)
     const angle = this.scale(value);
 
@@ -182,12 +182,12 @@ class Knob extends Component<KnobProps, KnobState> {
     }
 
     const styles = {
-      container: {
+      container: Object.assign({},{
         width:'50px',
         height:'50px',
         overflow:'hidden',
         position: 'relative',
-      },
+      }, style),
       input: {
         width:'50%',
         position: 'absolute',
