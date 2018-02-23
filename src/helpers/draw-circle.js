@@ -11,34 +11,40 @@ import React, { Component } from "react";
     r: number,
     borderColor: ?string,
     fillColor: ?string,
-    borderWidth: number
+    borderWidth: number,
+    fillOpacity: number
   };
   
   class DrawCircle extends React.Component<DrawCircleProps> {
     static defaultProps = {
       borderColor: "black",
       fillColor: "transparent",
-      borderWidth: 1
+      borderWidth: 2,
+      fillOpacity: 1
     };
     render() {
       const {
         r,
-        overlayStyle,
         borderColor,
         fillColor,
         borderWidth,
         ...rest
       } = this.props;
       const d = this.props.r * 2
-    
+      const padding = 10; //total padding
+      const width = d + padding;
+      const height = d + padding;
+      const cx = this.props.r + (padding / 2)
+      const cy = this.props.r + (padding / 2);
       return (
-        <svg width={d+this.props.borderWidth*2} height={d + this.props.borderWidth * 2} {...rest}>
+        <svg width={width} height={height} fill={'grey'} {...rest}>
           <circle
             stroke={this.props.borderColor}
             fill={this.props.fillColor}
+            fillOpacity={this.props.fillOpacity}
             r={this.props.r}
-            cx={this.props.r}
-            cy={this.props.r}
+            cx={cx}
+            cy={cy}
           />
         </svg>
       );

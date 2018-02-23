@@ -31,7 +31,9 @@ type KnobProps = {
   skin: Skin,
   format: ?(val: number) => string,
   onChange: (val: number) => void,
-  style: any
+  style: any,
+  preciseMode: boolean,
+  minimumDragDistance: number
 };
 
 type KnobState = {
@@ -44,25 +46,24 @@ type KnobState = {
  * Generic knob component
  */
 class Knob extends Component<KnobProps, KnobState> {
-
   container: any;
   scale: any;
   inputRef: any;
-
 
   state = {
     svgRef: null,
     dragging: false,
     dragDistance: 0
   };
-  
 
   static defaultProps = {
     onChange: function() {},
     skin: defaultSkin,
     format: (val: number) => {
       return val.toFixed(0);
-    }
+    },
+    preciseMode: true,
+    minimumDragDistance: 100
   };
   componentDidMount() {
     this.setupDragging(d3.select(this.container));
@@ -89,11 +90,11 @@ class Knob extends Component<KnobProps, KnobState> {
     }
   }
 
-  saveParentRef(container:any) {
+  saveParentRef(container: any) {
     this.container = container;
   }
 
-  onAngleChanged(angle:number) {
+  onAngleChanged(angle: number) {
     //Calculate domain value
     console.log(angle);
     let domainValue = this.scale.invert(angle);
@@ -115,27 +116,48 @@ class Knob extends Component<KnobProps, KnobState> {
     function started() {
       elem.classed("dragging", true);
       d3.event.on("drag", dragged).on("end", ended);
-      self.setState({ ...self.state, dragging: true });
+      self.setState({ ...self.state, dragging: true, dragDistance: 0 });
       //startPos = position relative to the box center
-      const startPos = { x: d3.event.x - cx, y: d3.event.y - cy };
-      const startAngle = u.getAngleForPoint(startPos.x, startPos.y);
-      
+      let startPos = { x: d3.event.x - cx, y: d3.event.y - cy };
+      let startAngle = u.getAngleForPoint(startPos.x, startPos.y);
+
       let lastPos = startPos;
       let lastAngle = u.getAngleForPoint(lastPos.x, lastPos.y);
+      //in precise mode, we won't monitor angle change unless the distance > minimumDragDistance
+      let monitoring = false;
 
       function dragged() {
         let currentPos = { x: d3.event.x - cx, y: d3.event.y - cy };
-        console.log('currentPos', currentPos);
-        const distanceFromCenter = Math.sqrt(Math.pow(currentPos.x, 2) + Math.pow(currentPos.y, 2))
+        console.log("currentPos", currentPos);
+        const distanceFromCenter = Math.sqrt(
+          Math.pow(currentPos.x, 2) + Math.pow(currentPos.y, 2)
+        );
         self.setState({
           ...self.state,
           dragDistance: distanceFromCenter
         });
+        if (self.props.preciseMode) {
+          console.log('distanceFromCenter', distanceFromCenter)
+          console.log('minimumDragDistance', self.props.minimumDragDistance)
+          if (
+            !monitoring &&
+            distanceFromCenter >= self.props.minimumDragDistance
+          ) {
+            //Start monitoring!
+            console.log('start monigoring')
+            monitoring = true;
+          }
+        } else {
+          monitoring = true;
+        }
+
         let currentAngle = u.getAngleForPoint(currentPos.x, currentPos.y);
         const deltaAngle = currentAngle - startAngle;
         lastPos = currentPos;
         const finalAngle = (initialAngle + deltaAngle) % 360;
-        self.onAngleChanged(finalAngle);
+        if (monitoring) {
+          self.onAngleChanged(finalAngle);
+        }
       }
 
       function ended() {
@@ -235,12 +257,14 @@ class Knob extends Component<KnobProps, KnobState> {
           <RotateView svg={this.state.svgRef} angle={angle} />
         )}
 
-        {this.state.dragging && (
-          <KnobVisualHelpers
-            svgRef={this.state.svgRef}
-            radius={this.state.dragDistance}
-          />
-        )}
+        {this.state.dragging &&
+          this.props.preciseMode && (
+            <KnobVisualHelpers
+              svgRef={this.state.svgRef}
+              radius={this.state.dragDistance}
+              minimumDragDistance={this.props.minimumDragDistance}
+            />
+          )}
       </React.Fragment>
     );
   }
