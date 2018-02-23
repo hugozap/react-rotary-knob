@@ -11,6 +11,8 @@ import * as u from "./utils";
 import uuid from "uuid";
 import { Samy, SvgProxy } from "react-samy-svg";
 import defaultSkin from "./knobdefaultskin";
+import { KnobVisualHelpers } from "./helpers/knob-visual-helpers";
+import InternalInput from "./InternalInput";
 
 /**
  * A skin consists of the svg code
@@ -21,171 +23,6 @@ type Skin = {
   knobX: number,
   knobY: number
 };
-
-
-type InternalInputProps = {
-  min: number,
-  max: number,
-  value: number,
-  step: ?number,
-  inputRef: (elem: any) => void,
-  onChange: () => void
-};
-
-class InternalInput extends React.Component<InternalInputProps> {
-  render() {
-    const props = this.props;
-    const hideStyle = {};
-
-    function onValChange(ev) {
-      props.onChange(Number(ev.target.value));
-    }
-
-    const { value, min, max, step, onChange, inputRef, ...rest } = props;
-    return (
-      <input
-        ref={inputRef}
-        value={value}
-        step={step || "1"}
-        onChange={onValChange}
-        style={hideStyle}
-        type="range"
-        min={min}
-        max={max}
-        {...rest}
-      />
-    );
-  }
-}
-
-
-
-/** Precision visual helpers */
-
-/**
- * Draws the overlay and the children
- */
-class HelpersOverlay extends React.Component {
-  render() {
-    const styles = {
-      overlay: Object.assign(
-        {
-          width: "100%",
-          height: "100vh",
-          top:0,
-          left: 0,
-          zIndex: 2147483647,
-          margin: "0",
-          padding: "0",
-          boxSizing: "border-box",
-          position: "fixed"
-        },
-        this.props.overlayStyle
-      )
-    };
-
-    return <div style={styles.overlay}>{this.props.children}</div>;
-  }
-}
-
-/**
- * Draws a circle with radius = r
- * position must be handled by parent
- */
-
-type DrawCircleProps = {
-  overlayStyle: ?any,
-  r: number,
-  borderColor: ?string,
-  fillColor: ?string,
-  borderWidth: number
-};
-
-class DrawCircle extends React.Component<DrawCircleProps> {
-  static defaultProps = {
-    borderColor: "black",
-    fillColor: "transparent",
-    borderWidth: 1
-  };
-  render() {
-    const {
-      r,
-      overlayStyle,
-      borderColor,
-      fillColor,
-      borderWidth,
-      ...rest
-    } = this.props;
-    const d = this.props.r * 2
-  
-    return (
-      <svg width={d+this.props.borderWidth*2} height={d + this.props.borderWidth * 2} {...rest}>
-        <circle
-          stroke={this.props.borderColor}
-          fill={this.props.fillColor}
-          r={this.props.r}
-          cx={this.props.r}
-          cy={this.props.r}
-        />
-      </svg>
-    );
-  }
-}
-
-/** 
- * Precision mode visual helpers
-*/
-type KnobVisualHelpersProps = {
-  svgRef: any,
-  radius: number
-}
-
-type KnobVisualHelpersState = {
-  cx: number,
-  cy: number
-}
-
-class KnobVisualHelpers extends React.Component<KnobVisualHelpersProps, KnobVisualHelpersState> {
-
-  state = {
-    cx: 0,
-    cy: 0
-  }
-
-  componentDidMount() {
-
-    //Calculate position
-    const box = this.props.svgRef.getBoundingClientRect();
-    var t;
-    const scrollX = (((t = document.documentElement) || (t = document.body.parentNode))
-    && typeof t.scrollLeft == 'number' ? t : document.body).scrollLeft
-
-    const scrollY = (((t = document.documentElement) || (t = document.body.parentNode))
-    && typeof t.scrollTop == 'number' ? t : document.body).scrollTop
-
-    const top = box.top - scrollY;
-    const left = box.left - scrollX;
-    this.setState({...this.state, cx: left, cy: top})
-    
-  }
-
-  render() {
-
-    const styles = {
-      circle: {
-        position: 'absolute',
-        top: this.state.cx,
-        left: this.state.cy
-      }
-    }
-    return (
-      <HelpersOverlay>
-        <DrawCircle style={styles.circle} r={this.props.radius} />
-      </HelpersOverlay>
-    );
-  }
-}
-
 
 type KnobProps = {
   value: number,
@@ -203,16 +40,22 @@ type KnobState = {
   dragDistance: number
 };
 
-
 /**
  * Generic knob component
  */
 class Knob extends Component<KnobProps, KnobState> {
+
+  container: any;
+  scale: any;
+  inputRef: any;
+
+
   state = {
     svgRef: null,
     dragging: false,
-    dragDistance: 0,
+    dragDistance: 0
   };
+  
 
   static defaultProps = {
     onChange: function() {},
@@ -227,8 +70,11 @@ class Knob extends Component<KnobProps, KnobState> {
 
   componentWillReceiveProps(nextProps) {
     //should recalculate scale?
-    const { pmin, pmax } = this.props;
-    const { nmin, nmax } = nextProps;
+    const pmin = this.props.min;
+    const pmax = this.props.max;
+    const nmin = nextProps.min;
+    const nmax = nextProps.max;
+
     if (pmin != nmin || pmax != nmax) {
       this.scale = d3
         .scaleLinear()
@@ -243,11 +89,11 @@ class Knob extends Component<KnobProps, KnobState> {
     }
   }
 
-  saveParentRef(container) {
+  saveParentRef(container:any) {
     this.container = container;
   }
 
-  onAngleChanged(angle) {
+  onAngleChanged(angle:number) {
     //Calculate domain value
     console.log(angle);
     let domainValue = this.scale.invert(angle);
@@ -263,27 +109,28 @@ class Knob extends Component<KnobProps, KnobState> {
     const box = elem.node().getBoundingClientRect();
     const cx = box.width / 2;
     const cy = box.height / 2;
-    console.log("cx", cx);
-    console.log("cy", cy);
-    console.log("box", box);
-
     let { value } = this.props;
     const initialAngle = this.scale(value);
 
     function started() {
       elem.classed("dragging", true);
       d3.event.on("drag", dragged).on("end", ended);
-      self.setState({...self.state, dragging: true})
-      //change will be relative to starting point for greater precision
+      self.setState({ ...self.state, dragging: true });
+      //startPos = position relative to the box center
       const startPos = { x: d3.event.x - cx, y: d3.event.y - cy };
       const startAngle = u.getAngleForPoint(startPos.x, startPos.y);
+      
       let lastPos = startPos;
       let lastAngle = u.getAngleForPoint(lastPos.x, lastPos.y);
 
-      
       function dragged() {
         let currentPos = { x: d3.event.x - cx, y: d3.event.y - cy };
-        self.setState({...self.state, dragDistance: Math.pow(currentPos.x, 2) + Math.pow(currentPos.y, 2)})
+        console.log('currentPos', currentPos);
+        const distanceFromCenter = Math.sqrt(Math.pow(currentPos.x, 2) + Math.pow(currentPos.y, 2))
+        self.setState({
+          ...self.state,
+          dragDistance: distanceFromCenter
+        });
         let currentAngle = u.getAngleForPoint(currentPos.x, currentPos.y);
         const deltaAngle = currentAngle - startAngle;
         lastPos = currentPos;
@@ -293,8 +140,8 @@ class Knob extends Component<KnobProps, KnobState> {
 
       function ended() {
         elem.classed("dragging", false);
-        self.setState({...self.state, dragging: false})
-        
+        self.setState({ ...self.state, dragging: false });
+
         //focus input so it can be moved with arrows
         self.inputRef.focus();
       }
@@ -388,7 +235,12 @@ class Knob extends Component<KnobProps, KnobState> {
           <RotateView svg={this.state.svgRef} angle={angle} />
         )}
 
-        {this.state.dragging && <KnobVisualHelpers svgRef={this.state.svgRef} radius={this.state.dragDistance} />}
+        {this.state.dragging && (
+          <KnobVisualHelpers
+            svgRef={this.state.svgRef}
+            radius={this.state.dragDistance}
+          />
+        )}
       </React.Fragment>
     );
   }
