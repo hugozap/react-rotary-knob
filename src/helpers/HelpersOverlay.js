@@ -3,7 +3,7 @@
 import React, { Component } from "react";
 
 type HelpersOverlayProps = {
-
+  overlayStyle: ?any
 }
 /**
  * Draws the overlay and the children
@@ -26,8 +26,10 @@ class HelpersOverlay extends React.Component<HelpersOverlayProps> {
           this.props.overlayStyle
         )
       };
+
+      const {overlayStyle, ...rest} = this.props
   
-      return <div style={styles.overlay}>{this.props.children}</div>;
+      return <div style={styles.overlay} {...rest}>{this.props.children}</div>;
     }
   }
 

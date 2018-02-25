@@ -80,12 +80,45 @@ function toGlobalCoordinates(svgdoc: any, elem: any, x: number, y: number) {
       }
     return realAngle;
   }
+
+
+  /**
+   * Transforms the top/left variables of the rectangle
+   * returned by getBoundingClientRect to viewport based coordinates
+   * without the scroll.
+   * @param {Rect} box 
+   */
+  function transformBoundingClientRectToViewport(box) {
+      var t;
+      const scrollX = (((t = document.documentElement) ||
+        (t = document.body.parentNode)) &&
+      typeof t.scrollLeft == "number"
+        ? t
+        : document.body
+      ).scrollLeft;
   
-  export {
+      const scrollY = (((t = document.documentElement) ||
+        (t = document.body.parentNode)) &&
+      typeof t.scrollTop == "number"
+        ? t
+        : document.body
+      ).scrollTop;
+  
+      //This assumes width == height
+      const ttop = box.top - scrollY;
+      const tleft = box.left - scrollX;
+      //info needed to draw line from center to mousepos
+  
+      return {top: ttop, left: tleft, width:box.width, height: box.height}
+    
+  }
+  
+  export default{
     toGlobalCoordinates,
     toLocalCoordinates,
     toRadians,
     getQuadrant,
-    getAngleForPoint
+    getAngleForPoint,
+    transformBoundingClientRectToViewport
   };
   

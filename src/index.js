@@ -6,13 +6,14 @@
  */
 
 import React, { Component } from "react";
-import * as d3 from "d3";
-import * as u from "./utils";
-import uuid from "uuid";
+import utils from  "./utils";
 import { Samy, SvgProxy } from "react-samy-svg";
 import defaultSkin from "./knobdefaultskin";
-import { KnobVisualHelpers } from "./helpers/knob-visual-helpers";
+import { KnobVisualHelpers } from "./helpers/KnobVisualHelpers";
 import InternalInput from "./InternalInput";
+import RotateView from './RotateView';
+import * as d3 from 'd3';
+import type {Point} from './Types'
 
 /**
  * A skin consists of the svg code
@@ -39,7 +40,8 @@ type KnobProps = {
 type KnobState = {
   svgRef: any,
   dragging: boolean,
-  dragDistance: number
+  dragDistance: number,
+  mousePos: Point
 };
 
 /**
@@ -53,7 +55,8 @@ class Knob extends Component<KnobProps, KnobState> {
   state = {
     svgRef: null,
     dragging: false,
-    dragDistance: 0
+    dragDistance: 0,
+    mousePos: {x:0, y:0}
   };
 
   static defaultProps = {
@@ -112,19 +115,25 @@ class Knob extends Component<KnobProps, KnobState> {
     const cy = box.height / 2;
     let { value } = this.props;
     const initialAngle = this.scale(value);
-
+    //transform the bounding box to viewport coordinates (removes scroll)
+    let vbox = utils.transformBoundingClientRectToViewport(box);
+    
     function started() {
+      //recalculate box in case there's been scroll
+      vbox = utils.transformBoundingClientRectToViewport(box);
       elem.classed("dragging", true);
       d3.event.on("drag", dragged).on("end", ended);
-      self.setState({ ...self.state, dragging: true, dragDistance: 0 });
       //startPos = position relative to the box center
       let startPos = { x: d3.event.x - cx, y: d3.event.y - cy };
-      let startAngle = u.getAngleForPoint(startPos.x, startPos.y);
-
+      let startAngle = utils.getAngleForPoint(startPos.x, startPos.y);
       let lastPos = startPos;
-      let lastAngle = u.getAngleForPoint(lastPos.x, lastPos.y);
+      let lastAngle = utils.getAngleForPoint(lastPos.x, lastPos.y);
       //in precise mode, we won't monitor angle change unless the distance > minimumDragDistance
       let monitoring = false;
+      self.setState({ ...self.state, dragging: true, dragDistance: 0,
+        mousePos: {x: d3.event.sourceEvent.clientX, y: d3.event.sourceEvent.clientY}
+      });
+      
 
       function dragged() {
         let currentPos = { x: d3.event.x - cx, y: d3.event.y - cy };
@@ -134,11 +143,11 @@ class Knob extends Component<KnobProps, KnobState> {
         );
         self.setState({
           ...self.state,
-          dragDistance: distanceFromCenter
+          dragDistance: distanceFromCenter,
+          mousePos: {x: d3.event.sourceEvent.clientX, y: d3.event.sourceEvent.clientY}
+          
         });
         if (self.props.preciseMode) {
-          console.log('distanceFromCenter', distanceFromCenter)
-          console.log('minimumDragDistance', self.props.minimumDragDistance)
           if (
             !monitoring &&
             distanceFromCenter >= self.props.minimumDragDistance
@@ -151,7 +160,7 @@ class Knob extends Component<KnobProps, KnobState> {
           monitoring = true;
         }
 
-        let currentAngle = u.getAngleForPoint(currentPos.x, currentPos.y);
+        let currentAngle = utils.getAngleForPoint(currentPos.x, currentPos.y);
         const deltaAngle = currentAngle - startAngle;
         lastPos = currentPos;
         const finalAngle = (initialAngle + deltaAngle) % 360;
@@ -262,58 +271,12 @@ class Knob extends Component<KnobProps, KnobState> {
             <KnobVisualHelpers
               svgRef={this.state.svgRef}
               radius={this.state.dragDistance}
+              mousePos={this.state.mousePos}
               minimumDragDistance={this.props.minimumDragDistance}
             />
           )}
       </React.Fragment>
     );
-  }
-}
-
-type RotateViewProps = {
-  angle: number,
-  onAngleChange: (angle: number) => void,
-  svg: any
-};
-
-class RotateView extends Component<RotateViewProps> {
-  controlSelector: ?string;
-  controlId: string;
-
-  constructor() {
-    super();
-    this.controlSelector = null;
-    this.controlId = "";
-  }
-
-  componentDidMount() {
-    this.controlId = uuid.v4();
-    this.controlSelector = ".rotate-controls-" + this.controlId;
-    this.renderControls(this.props);
-  }
-  componentWillReceiveProps(nextProps: RotateViewProps) {
-    this.renderControls(nextProps);
-  }
-
-  componentWillUnmount() {
-    this.clearControls();
-  }
-
-  renderControls(props: RotateViewProps) {
-    const { r, cx, cy, angle } = props;
-    const svgRef = d3.select(props.svg || ".main-svg");
-    let container = svgRef;
-    let knob = svgRef.select("#knob");
-  }
-
-  clearControls() {
-    const svgRef = d3.select(".main-svg");
-    let container = svgRef.select(this.controlSelector);
-    container.remove();
-  }
-
-  render() {
-    return null;
   }
 }
 

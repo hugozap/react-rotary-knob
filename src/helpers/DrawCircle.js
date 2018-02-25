@@ -7,12 +7,13 @@ import React, { Component } from "react";
    */
   
   type DrawCircleProps = {
-    overlayStyle: ?any,
     r: number,
     borderColor: ?string,
     fillColor: ?string,
     borderWidth: number,
-    fillOpacity: number
+    fillOpacity: number,
+    cx: number,
+    cy: number,
   };
   
   class DrawCircle extends React.Component<DrawCircleProps> {
@@ -31,22 +32,17 @@ import React, { Component } from "react";
         ...rest
       } = this.props;
       const d = this.props.r * 2
-      const padding = 10; //total padding
-      const width = d + padding;
-      const height = d + padding;
-      const cx = this.props.r + (padding / 2)
-      const cy = this.props.r + (padding / 2);
+
       return (
-        <svg width={width} height={height} fill={'grey'} {...rest}>
           <circle
             stroke={this.props.borderColor}
             fill={this.props.fillColor}
             fillOpacity={this.props.fillOpacity}
             r={this.props.r}
-            cx={cx}
-            cy={cy}
+            cx={this.props.cx}
+            cy={this.props.cy}
+            {...rest}
           />
-        </svg>
       );
     }
   }
