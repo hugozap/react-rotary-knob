@@ -18,6 +18,8 @@ class KnobApp extends React.Component {
   render() {
     return <div style={{padding:'6rem'}}>
        <Knob style={{width:'50px', height:'50px'}} onChange={(val)=>{this.changeValue(val)}} min={0} max={100} value={this.state.value} /> 
+       <Knob style={{width:'50px', height:'50px'}} onChange={(val)=>{this.changeValue(val)}} min={0} max={100} value={this.state.value} /> 
+       <Knob style={{width:'50px', height:'50px'}} onChange={(val)=>{this.changeValue(val)}} min={0} max={100} value={this.state.value} /> 
     </div>
      
   }

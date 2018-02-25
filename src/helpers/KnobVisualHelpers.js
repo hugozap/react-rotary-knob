@@ -77,7 +77,13 @@ class KnobVisualHelpers extends React.Component<
             cx={this.state.centerX}
             cy={this.state.centerY}
           />
+          {/* Line to mouse position */}
           <DrawLine
+            p1={{ x: this.state.centerX, y: this.state.centerY }}
+            p2={{ x: this.props.mousePos.x, y: this.props.mousePos.y }}
+          />
+           {/* Line to current value */}
+           <DrawLine
             p1={{ x: this.state.centerX, y: this.state.centerY }}
             p2={{ x: this.props.mousePos.x, y: this.props.mousePos.y }}
           />

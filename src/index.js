@@ -141,12 +141,7 @@ class Knob extends Component<KnobProps, KnobState> {
         const distanceFromCenter = Math.sqrt(
           Math.pow(currentPos.x, 2) + Math.pow(currentPos.y, 2)
         );
-        self.setState({
-          ...self.state,
-          dragDistance: distanceFromCenter,
-          mousePos: {x: d3.event.sourceEvent.clientX, y: d3.event.sourceEvent.clientY}
-          
-        });
+
         if (self.props.preciseMode) {
           if (
             !monitoring &&
@@ -164,6 +159,12 @@ class Knob extends Component<KnobProps, KnobState> {
         const deltaAngle = currentAngle - startAngle;
         lastPos = currentPos;
         const finalAngle = (initialAngle + deltaAngle) % 360;
+        self.setState({
+          ...self.state,
+          dragDistance: distanceFromCenter, 
+          mousePos: {x: d3.event.sourceEvent.clientX, y: d3.event.sourceEvent.clientY}
+        });
+
         if (monitoring) {
           self.onAngleChanged(finalAngle);
         }
