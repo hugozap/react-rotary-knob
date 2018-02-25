@@ -63,7 +63,6 @@ function toGlobalCoordinates(svgdoc: any, elem: any, x: number, y: number) {
     const angleDeg = angle * 180 / Math.PI;
     //The final value depends on the quadrant
     const quadrant = getQuadrant(x, y);
-    console.log('quadrant', quadrant)
     let realAngle = angleDeg;
   
        if( quadrant === 1 ) {

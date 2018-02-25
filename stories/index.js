@@ -8,7 +8,7 @@ const stories = storiesOf('Knob', module)
 class KnobApp extends React.Component {
 
   state = {
-    value: 50
+    value: 0
   }
 
   changeValue(val) {
@@ -17,9 +17,15 @@ class KnobApp extends React.Component {
 
   render() {
     return <div style={{padding:'6rem'}}>
-       <Knob style={{width:'50px', height:'50px'}} onChange={(val)=>{this.changeValue(val)}} min={0} max={100} value={this.state.value} /> 
-       <Knob style={{width:'50px', height:'50px'}} onChange={(val)=>{this.changeValue(val)}} min={0} max={100} value={this.state.value} /> 
-       <Knob style={{width:'50px', height:'50px'}} onChange={(val)=>{this.changeValue(val)}} min={0} max={100} value={this.state.value} /> 
+     <h2> Props </h2>
+       <p>
+       - min: 0
+       - max: 100
+       </p>
+       <Knob style={{width:'50px', height:'50px', display:'inline-block'}} onChange={(val)=>{this.changeValue(val)}} min={0} max={100} value={this.state.value} /> 
+       <hr/>
+       <h2>{this.state.value.toFixed(2)} </h2>
+
     </div>
      
   }

@@ -1,5 +1,5 @@
 {
-    "name": "react-rotary-knob",
+    "name": "react-precise-knob",
     "version": "0.0.1",
     "description": "Skinnable Rotary Knob",
     "main": "build/commonjs/index.js",

@@ -113,17 +113,21 @@ class Knob extends Component<KnobProps, KnobState> {
     const box = elem.node().getBoundingClientRect();
     const cx = box.width / 2;
     const cy = box.height / 2;
-    let { value } = this.props;
-    const initialAngle = this.scale(value);
+    
     //transform the bounding box to viewport coordinates (removes scroll)
     let vbox = utils.transformBoundingClientRectToViewport(box);
     
     function started() {
+      let { value } = self.props;
+      const initialAngle = self.scale(value);
+      console.log('initial Angle', initialAngle);
       //recalculate box in case there's been scroll
       vbox = utils.transformBoundingClientRectToViewport(box);
       elem.classed("dragging", true);
       d3.event.on("drag", dragged).on("end", ended);
       //startPos = position relative to the box center
+      //Note: the d3 event container is the same element, so coordinates
+      //are relative to it.
       let startPos = { x: d3.event.x - cx, y: d3.event.y - cy };
       let startAngle = utils.getAngleForPoint(startPos.x, startPos.y);
       let lastPos = startPos;
@@ -137,7 +141,6 @@ class Knob extends Component<KnobProps, KnobState> {
 
       function dragged() {
         let currentPos = { x: d3.event.x - cx, y: d3.event.y - cy };
-        console.log("currentPos", currentPos);
         const distanceFromCenter = Math.sqrt(
           Math.pow(currentPos.x, 2) + Math.pow(currentPos.y, 2)
         );
@@ -149,6 +152,10 @@ class Knob extends Component<KnobProps, KnobState> {
           ) {
             //Start monitoring!
             console.log('start monigoring')
+            //Reset startPos y startAngle
+            startPos = currentPos;
+            startAngle = utils.getAngleForPoint(currentPos.x, currentPos.y);
+            console.log('engage: startAngle reseted');
             monitoring = true;
           }
         } else {
@@ -156,7 +163,9 @@ class Knob extends Component<KnobProps, KnobState> {
         }
 
         let currentAngle = utils.getAngleForPoint(currentPos.x, currentPos.y);
+        console.log('currentAngle:', currentAngle);
         const deltaAngle = currentAngle - startAngle;
+        console.log('deltaAngle', deltaAngle )
         lastPos = currentPos;
         const finalAngle = (initialAngle + deltaAngle) % 360;
         self.setState({
