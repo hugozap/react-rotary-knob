@@ -41,11 +41,32 @@ stories.add("Uncontrolled", () => {
     console.log('new value:'+val)
   }
   return (
+    <div>
+      <p>
+      In uncontrolled mode, the component manages its own state
+      (like html form input elements).
+
+      To trigger 'uncontrolled' mode do not pass a value prop
+      <pre>
+          {`
+  function onChange(val) {
+    console.log('new value:'+val)
+  }
+  
+  <Knob
+  min={0}
+  max={100}
+  onChange={onChange}
+/>`}
+      </pre>
+    </p>
     <Knob
       style={{ width: "50px", height: "50px", padding:'6rem', display: "inline-block" }}
       min={0}
       max={100}
       onChange={onChange}
     />
+    </div>
+    
   );
 });
