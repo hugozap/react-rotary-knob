@@ -6,7 +6,6 @@ import * as d3 from "d3";
 
 type RotateViewProps = {
     angle: number,
-    onAngleChange: (angle: number) => void,
     svg: any
   };
   

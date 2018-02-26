@@ -10,7 +10,6 @@ import type {Point} from '../Types'
 type DrawLineProps = {
   width: number,
   color: ?string,
-  opacity: number,
   p1: Point,
   p2: Point
 };
@@ -19,10 +18,9 @@ class DrawLine extends React.Component<DrawLineProps> {
   static defaultProps = {
     width: 2,
     color: "black",
-    opacity: 1
   };
   render() {
-    const { width, color, opacity, ...rest } = this.props;
+    const { width, color, ...rest } = this.props;
     return (
       <line
         x1={this.props.p1.x}
@@ -31,6 +29,7 @@ class DrawLine extends React.Component<DrawLineProps> {
         y2={this.props.p2.y}
         stroke={this.props.color}
         strokeWidth={this.props.width}
+        {...rest}
       />
     );
   }

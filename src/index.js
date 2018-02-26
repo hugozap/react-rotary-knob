@@ -30,7 +30,7 @@ type KnobProps = {
   min: number,
   max: number,
   skin: Skin,
-  format: ?(val: number) => string,
+  format: (val: number) => string,
   onChange: (val: number) => void,
   style: any,
   preciseMode: boolean,
@@ -41,7 +41,8 @@ type KnobState = {
   svgRef: any,
   dragging: boolean,
   dragDistance: number,
-  mousePos: Point
+  mousePos: Point,
+  valueAngle: number
 };
 
 function printDebugValues(obj) {
@@ -66,7 +67,8 @@ class Knob extends Component<KnobProps, KnobState> {
     svgRef: null,
     dragging: false,
     dragDistance: 0,
-    mousePos: {x:0, y:0}
+    mousePos: {x:0, y:0},
+    valueAngle: 0
   };
 
   static defaultProps = {
@@ -109,7 +111,6 @@ class Knob extends Component<KnobProps, KnobState> {
 
   onAngleChanged(angle: number) {
     //Calculate domain value
-    console.log(angle);
     let domainValue = this.scale.invert(angle);
     this.props.onChange(domainValue);
   }
@@ -185,25 +186,29 @@ class Knob extends Component<KnobProps, KnobState> {
           finalAngle-=360;
         }
 
-        printDebugValues({
-          initialAngle,
-          startAngle,
-          startPos,
-          currentPos,
-          currentAngle,
-          deltaAngle,
-          finalAngle,
-        })
+        // printDebugValues({
+        //   initialAngle,
+        //   startAngle,
+        //   startPos,
+        //   currentPos,
+        //   currentAngle,
+        //   deltaAngle,
+        //   finalAngle,
+        // })
 
-        self.setState({ 
-          ...self.state,
-          dragDistance: distanceFromCenter, 
-          mousePos: {x: d3.event.sourceEvent.clientX, y: d3.event.sourceEvent.clientY}
-        });
+  
 
         if (monitoring) {
           self.onAngleChanged(finalAngle);
         }
+
+        self.setState({ 
+          ...self.state,
+          dragDistance: distanceFromCenter, 
+          mousePos: {x: d3.event.sourceEvent.clientX, y: d3.event.sourceEvent.clientY},
+          valueAngle: monitoring ? finalAngle : initialAngle 
+        });
+
       }
 
       function ended() {
@@ -228,7 +233,7 @@ class Knob extends Component<KnobProps, KnobState> {
     this.scale = d3
       .scaleLinear()
       .domain([this.props.min, this.props.max])
-      .range([0, 359]);
+      .range([0, 360]);
   }
 
   render() {
@@ -240,11 +245,12 @@ class Knob extends Component<KnobProps, KnobState> {
       skin,
       style,
       format,
+      preciseMode,
+      minimumDragDistance,
       ...rest
     } = this.props;
     const angle = this.scale(value);
     const onFormControlChange = newVal => {
-      console.log("input control changed: " + newVal);
       this.props.onChange(newVal);
     };
 
@@ -310,6 +316,7 @@ class Knob extends Component<KnobProps, KnobState> {
               radius={this.state.dragDistance}
               mousePos={this.state.mousePos}
               minimumDragDistance={this.props.minimumDragDistance}
+              valueAngle={this.state.valueAngle}
             />
           )}
       </React.Fragment>

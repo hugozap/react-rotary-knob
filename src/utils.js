@@ -60,24 +60,23 @@ function toGlobalCoordinates(svgdoc: any, elem: any, x: number, y: number) {
     if (x == 0 && y == 0) return 0;
   
     const angle = Math.atan(x / y);
-    const angleDeg = angle * 180 / Math.PI;
+    let angleDeg = angle * 180 / Math.PI;
     //The final value depends on the quadrant
     const quadrant = getQuadrant(x, y);
-    let realAngle = angleDeg;
-  
+
        if( quadrant === 1 ) {
-         realAngle = 90 - realAngle;
+         angleDeg = 90 - angleDeg;
        }
        if (quadrant === 2) {
-        realAngle = 90 - angleDeg;
+        angleDeg = 90 - angleDeg;
       }
       if (quadrant === 3) {
-        realAngle = 270 - angleDeg;
+        angleDeg = 270 - angleDeg;
       }
       if (quadrant === 4) {
-        realAngle = 270 - angleDeg;
+        angleDeg = 270 - angleDeg;
       }
-    return realAngle;
+    return angleDeg;
   }
 
 
