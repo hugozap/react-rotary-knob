@@ -44,6 +44,16 @@ type KnobState = {
   mousePos: Point
 };
 
+function printDebugValues(obj) {
+  console.log('------------')
+  Object.keys(obj).forEach((key)=>{
+    const value = typeof obj[key] === 'object' ? JSON.stringify(obj[key]) : obj[key]
+    console.log(`${key}: ${value}`)
+  })
+  console.log('------------')
+  
+}
+
 /**
  * Generic knob component
  */
@@ -118,6 +128,7 @@ class Knob extends Component<KnobProps, KnobState> {
     let vbox = utils.transformBoundingClientRectToViewport(box);
     
     function started() {
+
       let { value } = self.props;
       const initialAngle = self.scale(value);
       console.log('initial Angle', initialAngle);
@@ -151,11 +162,9 @@ class Knob extends Component<KnobProps, KnobState> {
             distanceFromCenter >= self.props.minimumDragDistance
           ) {
             //Start monitoring!
-            console.log('start monigoring')
             //Reset startPos y startAngle
             startPos = currentPos;
             startAngle = utils.getAngleForPoint(currentPos.x, currentPos.y);
-            console.log('engage: startAngle reseted');
             monitoring = true;
           }
         } else {
@@ -163,12 +172,30 @@ class Knob extends Component<KnobProps, KnobState> {
         }
 
         let currentAngle = utils.getAngleForPoint(currentPos.x, currentPos.y);
-        console.log('currentAngle:', currentAngle);
+        
         const deltaAngle = currentAngle - startAngle;
-        console.log('deltaAngle', deltaAngle )
+        
         lastPos = currentPos;
-        const finalAngle = (initialAngle + deltaAngle) % 360;
-        self.setState({
+        let finalAngle = (initialAngle + deltaAngle);
+      
+        if( finalAngle < 0 ) {
+          //E.g -1 turns 359
+          finalAngle+=360;
+        } else if (finalAngle > 360 ) {
+          finalAngle-=360;
+        }
+
+        printDebugValues({
+          initialAngle,
+          startAngle,
+          startPos,
+          currentPos,
+          currentAngle,
+          deltaAngle,
+          finalAngle,
+        })
+
+        self.setState({ 
           ...self.state,
           dragDistance: distanceFromCenter, 
           mousePos: {x: d3.event.sourceEvent.clientX, y: d3.event.sourceEvent.clientY}
