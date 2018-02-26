@@ -84,7 +84,7 @@ class Knob extends Component<KnobProps, KnobState> {
     this.setupDragging(d3.select(this.container));
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps(nextProps:KnobProps) {
     //should recalculate scale?
     const pmin = this.props.min;
     const pmax = this.props.max;
