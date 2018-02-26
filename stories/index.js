@@ -33,10 +33,19 @@ class KnobApp extends React.Component {
 }
 
 stories.add("Basic", () => {
-  let value = 50;
-  function onChange(val) {
-    value = val;
-  }
-
   return <KnobApp />;
+});
+
+stories.add("Uncontrolled", () => {
+  function onChange(val) {
+    console.log('new value:'+val)
+  }
+  return (
+    <Knob
+      style={{ width: "50px", height: "50px", padding:'6rem', display: "inline-block" }}
+      min={0}
+      max={100}
+      onChange={onChange}
+    />
+  );
 });

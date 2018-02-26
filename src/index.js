@@ -26,7 +26,8 @@ type Skin = {
 };
 
 type KnobProps = {
-  value: number,
+  value: ?number,
+  defaultValue: ?number,
   min: number,
   max: number,
   skin: Skin,
@@ -42,7 +43,8 @@ type KnobState = {
   dragging: boolean,
   dragDistance: number,
   mousePos: Point,
-  valueAngle: number
+  valueAngle: number,
+  uncontrolledValue: ?number
 };
 
 function printDebugValues(obj) {
@@ -62,13 +64,15 @@ class Knob extends Component<KnobProps, KnobState> {
   container: any;
   scale: any;
   inputRef: any;
+  controlled: boolean
 
   state = {
     svgRef: null,
     dragging: false,
     dragDistance: 0,
     mousePos: {x:0, y:0},
-    valueAngle: 0
+    valueAngle: 0,
+    uncontrolledValue: 0,
   };
 
   static defaultProps = {
@@ -78,9 +82,26 @@ class Knob extends Component<KnobProps, KnobState> {
       return val.toFixed(0);
     },
     preciseMode: true,
-    minimumDragDistance: 100
+    minimumDragDistance: 100,
+    defaultValue: 0
   };
   componentDidMount() {
+    if(this.props.value == null ) {
+      /**
+       * If the component is not controlled
+       * then the state variable uncontrolledValue
+       * will be used and will be initialized to
+       * the defaultValue (or 0)
+       */  
+      this.controlled = false;
+      this.setState({
+        ...this.state,
+        uncontrolledValue: this.props.defaultValue
+      })
+
+    } else {
+      this.controlled = true;
+    }
     this.setupDragging(d3.select(this.container));
   }
 
@@ -112,7 +133,20 @@ class Knob extends Component<KnobProps, KnobState> {
   onAngleChanged(angle: number) {
     //Calculate domain value
     let domainValue = this.scale.invert(angle);
+    if(!this.controlled) {
+      /**
+       * If the mode is 'uncontrolled' we need to update our local state
+       */
+      this.setState({...this.state, uncontrolledValue: domainValue})
+    }
     this.props.onChange(domainValue);
+  }
+
+  /**
+   * Returns the current value (depending on controlled/uncontrolled mode)
+   */
+  getValue():number {
+    return this.controlled ? this.props.value : this.state.uncontrolledValue;
   }
 
   setupDragging(elem: d3.Selection<any>) {
@@ -130,7 +164,7 @@ class Knob extends Component<KnobProps, KnobState> {
     
     function started() {
 
-      let { value } = self.props;
+      let value = self.getValue();
       const initialAngle = self.scale(value);
       console.log('initial Angle', initialAngle);
       //recalculate box in case there's been scroll
@@ -236,9 +270,21 @@ class Knob extends Component<KnobProps, KnobState> {
       .range([0, 360]);
   }
 
+   onFormControlChange(newVal:number) {
+    if(!this.controlled) {
+      /**
+       * If the mode is 'uncontrolled' we need to update our local state
+       */
+      this.setState({...this.state, uncontrolledValue: newVal})
+    }
+
+    this.props.onChange(newVal);
+  };
+
   render() {
     const {
       value,
+      defaultValue,
       min,
       max,
       onChange,
@@ -249,10 +295,10 @@ class Knob extends Component<KnobProps, KnobState> {
       minimumDragDistance,
       ...rest
     } = this.props;
-    const angle = this.scale(value);
-    const onFormControlChange = newVal => {
-      this.props.onChange(newVal);
-    };
+
+    const currentValue:number = this.getValue();
+    const angle = this.scale(currentValue);
+
 
     const styles = {
       container: Object.assign(
@@ -284,10 +330,10 @@ class Knob extends Component<KnobProps, KnobState> {
               this.inputRef = input;
             }}
             style={styles.input}
-            value={value}
+            value={currentValue}
             min={min}
             max={max}
-            onChange={onFormControlChange}
+            onChange={this.onFormControlChange.bind(this)}
           />
 
           <Samy
@@ -302,7 +348,7 @@ class Knob extends Component<KnobProps, KnobState> {
                 skin.knobY
               })`}
             />
-            <SvgProxy selector="tspan">{this.props.format(value)}</SvgProxy>
+            <SvgProxy selector="tspan">{this.props.format(currentValue)}</SvgProxy>
           </Samy>
         </div>
         {this.state.svgRef && (

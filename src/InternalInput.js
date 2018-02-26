@@ -11,6 +11,10 @@ type InternalInputProps = {
   };
   
   class InternalInput extends React.Component<InternalInputProps> {
+
+    static defaultProps = {
+      step: 1
+    }
     render() {
       const props = this.props;
       const hideStyle = {};
@@ -24,7 +28,7 @@ type InternalInputProps = {
         <input
           ref={inputRef}
           value={value}
-          step={step || "1"}
+          step={step}
           onChange={onValChange}
           style={hideStyle}
           type="range"
