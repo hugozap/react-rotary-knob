@@ -16,9 +16,11 @@ class KnobApp extends React.Component {
 
   render() {
     return (
-      <div style={{ padding: "8rem" }}>
+      <div>
+        <h2>{this.state.value.toFixed(2)} </h2>
+        
         <Knob
-          style={{ width: "50px", height: "50px", display: "inline-block" }}
+          style={{ width: "50px",marginTop:'8rem', marginLeft:'8rem', height: "50px", display: "inline-block" }}
           onChange={val => {
             this.changeValue(val);
           }}
@@ -26,7 +28,6 @@ class KnobApp extends React.Component {
           max={100}
           value={this.state.value}
         />
-        <h2 style={{ paddingTop: "200px" }}>{this.state.value.toFixed(2)} </h2>
       </div>
     );
   }
@@ -47,24 +48,54 @@ stories.add("Uncontrolled", () => {
       (like html form input elements).
 
       To trigger 'uncontrolled' mode do not pass a value prop
+      </p>
       <pre>
           {`
   function onChange(val) {
     console.log('new value:'+val)
   }
-  
+
   <Knob
   min={0}
   max={100}
-  onChange={onChange}
-/>`}
+  onChange={onChange}/>`}
       </pre>
-    </p>
+  
     <Knob
-      style={{ width: "50px", height: "50px", padding:'6rem', display: "inline-block" }}
+      style={{ width: "50px", height: "50px", paddingLeft:'8rem', display: "inline-block" }}
       min={0}
       max={100}
       onChange={onChange}
+    />
+    </div>
+    
+  );
+});
+
+
+stories.add("Change 'unlock' distance", () => {
+ 
+  return (
+    <div>
+      <p>
+      The minimum distance to unlock the rotation can be changed
+      with the prop unlockDistance
+      </p>
+  
+    <p> With unlockDistance=50 </p>
+    <Knob
+      style={{ width: "50px", height: "50px", paddingLeft:'8rem', display: "inline-block" }}
+      min={0}
+      max={100}
+      unlockDistance={50}
+    />
+    <p> With unlockDistance=100 </p>
+    
+    <Knob
+      style={{ width: "50px", height: "50px", paddingLeft:'8rem', display: "inline-block" }}
+      min={0}
+      max={100}
+      unlockDistance={100}
     />
     </div>
     

@@ -35,7 +35,7 @@ type KnobProps = {
   onChange: (val: number) => void,
   style: any,
   preciseMode: boolean,
-  minimumDragDistance: number
+  unlockDistance: number
 };
 
 type KnobState = {
@@ -82,7 +82,7 @@ class Knob extends Component<KnobProps, KnobState> {
       return val.toFixed(0);
     },
     preciseMode: true,
-    minimumDragDistance: 100,
+    unlockDistance: 100,
     defaultValue: 0
   };
   componentDidMount() {
@@ -178,7 +178,7 @@ class Knob extends Component<KnobProps, KnobState> {
       let startAngle = utils.getAngleForPoint(startPos.x, startPos.y);
       let lastPos = startPos;
       let lastAngle = utils.getAngleForPoint(lastPos.x, lastPos.y);
-      //in precise mode, we won't monitor angle change unless the distance > minimumDragDistance
+      //in precise mode, we won't monitor angle change unless the distance > unlockDistance
       let monitoring = false;
       self.setState({ ...self.state, dragging: true, dragDistance: 0,
         mousePos: {x: d3.event.sourceEvent.clientX, y: d3.event.sourceEvent.clientY}
@@ -194,7 +194,7 @@ class Knob extends Component<KnobProps, KnobState> {
         if (self.props.preciseMode) {
           if (
             !monitoring &&
-            distanceFromCenter >= self.props.minimumDragDistance
+            distanceFromCenter >= self.props.unlockDistance
           ) {
             //Start monitoring!
             //Reset startPos y startAngle
@@ -292,7 +292,7 @@ class Knob extends Component<KnobProps, KnobState> {
       style,
       format,
       preciseMode,
-      minimumDragDistance,
+      unlockDistance,
       ...rest
     } = this.props;
 
@@ -361,7 +361,7 @@ class Knob extends Component<KnobProps, KnobState> {
               svgRef={this.state.svgRef}
               radius={this.state.dragDistance}
               mousePos={this.state.mousePos}
-              minimumDragDistance={this.props.minimumDragDistance}
+              minimumDragDistance={this.props.unlockDistance}
               valueAngle={this.state.valueAngle}
             />
           )}
