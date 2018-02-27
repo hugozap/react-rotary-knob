@@ -1,7 +1,7 @@
 {
-    "name": "react-precise-knob",
-    "version": "0.0.1",
-    "description": "Skinnable Rotary Knob",
+    "name": "react-rotary-knob",
+    "version": "1.0.0",
+    "description": "Skinnable Rotary Knob for React",
     "main": "build/commonjs/index.js",
     "peerDependencies": {
         "react": "^16.2.0"

@@ -76,6 +76,9 @@ class Knob extends Component<KnobProps, KnobState> {
   };
 
   static defaultProps = {
+    min: 0,
+    max: 100,
+    value: 0,
     onChange: function() {},
     skin: defaultSkin,
     format: (val: number) => {
@@ -90,8 +93,7 @@ class Knob extends Component<KnobProps, KnobState> {
       /**
        * If the component is not controlled
        * then the state variable uncontrolledValue
-       * will be used and will be initialized to
-       * the defaultValue (or 0)
+       * will be used to store the current value
        */  
       this.controlled = false;
       this.setState({
@@ -137,7 +139,9 @@ class Knob extends Component<KnobProps, KnobState> {
       /**
        * If the mode is 'uncontrolled' we need to update our local state
        */
-      this.setState({...this.state, uncontrolledValue: domainValue})
+      this.setState((st)=>{
+        return {uncontrolledValue: domainValue}
+      })
     }
     this.props.onChange(domainValue);
   }
@@ -220,28 +224,31 @@ class Knob extends Component<KnobProps, KnobState> {
           finalAngle-=360;
         }
 
-        // printDebugValues({
-        //   initialAngle,
-        //   startAngle,
-        //   startPos,
-        //   currentPos,
-        //   currentAngle,
-        //   deltaAngle,
-        //   finalAngle,
-        // })
+        printDebugValues({
+          cx,
+          cy,
+          initialAngle,
+          startAngle,
+          startPos,
+          currentPos,
+          currentAngle,
+          deltaAngle,
+          finalAngle,
+        })
 
   
 
         if (monitoring) {
           self.onAngleChanged(finalAngle);
         }
-
-        self.setState({ 
+        console.log('distance from center', distanceFromCenter)
+        self.setState(()=>{
+          return { 
           ...self.state,
           dragDistance: distanceFromCenter, 
           mousePos: {x: d3.event.sourceEvent.clientX, y: d3.event.sourceEvent.clientY},
           valueAngle: monitoring ? finalAngle : initialAngle 
-        });
+        }});
 
       }
 

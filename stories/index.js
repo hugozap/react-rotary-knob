@@ -20,7 +20,7 @@ class KnobApp extends React.Component {
         <h2>{this.state.value.toFixed(2)} </h2>
         
         <Knob
-          style={{ width: "50px",marginTop:'8rem', marginLeft:'8rem', height: "50px", display: "inline-block" }}
+          style={{ width: "80px",marginTop:'8rem', marginLeft:'8rem', height: "80px", display: "inline-block" }}
           onChange={val => {
             this.changeValue(val);
           }}
@@ -62,7 +62,7 @@ stories.add("Uncontrolled", () => {
       </pre>
   
     <Knob
-      style={{ width: "50px", height: "50px", paddingLeft:'8rem', display: "inline-block" }}
+      style={{ width: "50px", height: "50px", marginLeft:'8rem', display: "inline-block" }}
       min={0}
       max={100}
       onChange={onChange}
@@ -84,7 +84,7 @@ stories.add("Change 'unlock' distance", () => {
   
     <p> With unlockDistance=50 </p>
     <Knob
-      style={{ width: "50px", height: "50px", paddingLeft:'8rem', display: "inline-block" }}
+      style={{ width: "50px", height: "50px", marginLeft:'8rem', display: "inline-block" }}
       min={0}
       max={100}
       unlockDistance={50}
@@ -92,7 +92,7 @@ stories.add("Change 'unlock' distance", () => {
     <p> With unlockDistance=100 </p>
     
     <Knob
-      style={{ width: "50px", height: "50px", paddingLeft:'8rem', display: "inline-block" }}
+      style={{ width: "50px", height: "50px", marginLeft:'8rem', display: "inline-block" }}
       min={0}
       max={100}
       unlockDistance={100}
