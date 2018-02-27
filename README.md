@@ -1,14 +1,26 @@
-# [WIP] React Rotary Knob
-
+# 🎛 React Rotary Knob
 
 [Demo](https://hugozap.github.io/react-rotary-knob/storybook)
 
-(Work in progress, please come back in a few days)
+## Features
 
-*This component is meant to be used in 'controlled mode'. It doesn't save the value internally so you must use your parent component state / redux store*
+- Precise mode: Doesn't jump on dragging (Increase drag distance for more precision)
+- Works in both controlled (recommended) and uncontrolled mode.
+- Support arrow keys.
+- **Suspports custom skins**
 
+## Precision mode
 
-## Usage
+![precision mode](./docs/img/knob-basic2.gif)
+
+When precision mode is active (default), a minimum dragging distance
+is required to unlock de control. 
+
+## Usage (Controlled mode - recommended)
+
+Similar to controlled mode for HTML input controls,
+you need to store the value and use the `value` and `onChange`
+props to update it. This is the recommended usage.
 
 ```jsx
 class App extends React.Component {
@@ -22,26 +34,46 @@ class App extends React.Component {
   }
 
   render() {
-    return <Knob onChange={(val)=>{this.changeValue(val)}} min={0} max={100} value={this.state.value} style={{width:'300px', height:'200px'}}/>
+    return <Knob onChange={this.changeValue.bind(this)} min={0} max={100} value={this.state.value}/>
      
   }
 }
 ```
 
-Precise rotary knob for React
+## Usage (Uncontrolled mode)
 
-## Features
+In uncontrolled mode the component manages its own state.
+Instead of providing a `value` prop you should define a default value
+with the `defaultValue` prop. Use the `onChange` prop if you want to
+be notified when the value changes.
 
-- Drag away from knob to increase precision.
-- Skinnable with SVG
-- Change label format
+```jsx
+class App extends React.Component {
 
+  changeValue(val) {
+   console.log('The value changed to '+val)
+  }
+
+  render() {
+    return <Knob defaultValue={0} min={0} max={100} onChange={this.changeValue.bind(this)}  />
+  }
+}
+```
 
 ### Api
 
 Props:
 
-- format: callback for custom text formats
-- skin: reference to the skin object
-- value: value used
-- onChange: callback for value change 
+| Prop | Description | Default Value |
+|-----|--------------|----|
+| min | Minimum value| 0 |
+| max | Maximum value| 100 |
+| value | Control Value | 0 |
+| defaultValue | start value for uncontrolled mode | 0 |
+| onChange | Callback with the updated value | |
+| skin | Skin object| |
+
+
+### Custom skin guide
+
+TODO
