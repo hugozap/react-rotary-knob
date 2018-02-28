@@ -78,7 +78,6 @@ class Knob extends Component<KnobProps, KnobState> {
   static defaultProps = {
     min: 0,
     max: 100,
-    value: 0,
     onChange: function() {},
     skin: defaultSkin,
     format: (val: number) => {
@@ -135,10 +134,12 @@ class Knob extends Component<KnobProps, KnobState> {
   onAngleChanged(angle: number) {
     //Calculate domain value
     let domainValue = this.scale.invert(angle);
+    console.log('angleChanged, controlled:' + this.controlled)
     if(!this.controlled) {
       /**
        * If the mode is 'uncontrolled' we need to update our local state
        */
+      console.log('Will update state async')
       this.setState((st)=>{
         return {uncontrolledValue: domainValue}
       })
@@ -150,7 +151,7 @@ class Knob extends Component<KnobProps, KnobState> {
    * Returns the current value (depending on controlled/uncontrolled mode)
    */
   getValue():number {
-    return this.controlled ? this.props.value : this.state.uncontrolledValue;
+    return this.controlled === true ? this.props.value : this.state.uncontrolledValue;
   }
 
   setupDragging(elem: d3.Selection<any>) {
@@ -159,20 +160,17 @@ class Knob extends Component<KnobProps, KnobState> {
     }
     // Add dragging behavior to selector element
     var self = this;
-    const box = elem.node().getBoundingClientRect();
-    const cx = box.width / 2;
-    const cy = box.height / 2;
+    let vbox = elem.node().getBoundingClientRect();
+    const cx = vbox.width / 2;
+    const cy = vbox.height / 2;
     
-    //transform the bounding box to viewport coordinates (removes scroll)
-    let vbox = utils.transformBoundingClientRectToViewport(box);
     
     function started() {
 
       let value = self.getValue();
       const initialAngle = self.scale(value);
       console.log('initial Angle', initialAngle);
-      //recalculate box in case there's been scroll
-      vbox = utils.transformBoundingClientRectToViewport(box);
+      vbox = elem.node().getBoundingClientRect();;
       elem.classed("dragging", true);
       d3.event.on("drag", dragged).on("end", ended);
       //startPos = position relative to the box center
@@ -224,17 +222,17 @@ class Knob extends Component<KnobProps, KnobState> {
           finalAngle-=360;
         }
 
-        printDebugValues({
-          cx,
-          cy,
-          initialAngle,
-          startAngle,
-          startPos,
-          currentPos,
-          currentAngle,
-          deltaAngle,
-          finalAngle,
-        })
+        // printDebugValues({
+        //   cx,
+        //   cy,
+        //   initialAngle,
+        //   startAngle,
+        //   startPos,
+        //   currentPos,
+        //   currentAngle,
+        //   deltaAngle,
+        //   finalAngle,
+        // })
 
   
 
@@ -304,6 +302,7 @@ class Knob extends Component<KnobProps, KnobState> {
     } = this.props;
 
     const currentValue:number = this.getValue();
+    console.log('render currentValue:', currentValue);
     const angle = this.scale(currentValue);
 
 

@@ -82,11 +82,12 @@ function toGlobalCoordinates(svgdoc: any, elem: any, x: number, y: number) {
 
   /**
    * Transforms the top/left variables of the rectangle
-   * returned by getBoundingClientRect to viewport based coordinates
+   * returned by getBoundingClientRect to document based coordinates
    * without the scroll.
+   * UPDATE
    * @param {Rect} box 
    */
-  function transformBoundingClientRectToViewport(box) {
+  function transformBoundingClientRectToDocument(box) {
       var t;
       const scrollX = (((t = document.documentElement) ||
         (t = document.body.parentNode)) &&
@@ -101,6 +102,7 @@ function toGlobalCoordinates(svgdoc: any, elem: any, x: number, y: number) {
         ? t
         : document.body
       ).scrollTop;
+  
   
       //This assumes width == height
       const ttop = box.top - scrollY;
@@ -117,6 +119,6 @@ function toGlobalCoordinates(svgdoc: any, elem: any, x: number, y: number) {
     toRadians,
     getQuadrant,
     getAngleForPoint,
-    transformBoundingClientRectToViewport
+    transformBoundingClientRectToDocument
   };
   

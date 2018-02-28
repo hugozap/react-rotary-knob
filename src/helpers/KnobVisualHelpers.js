@@ -47,9 +47,8 @@ class KnobVisualHelpers extends React.Component<
 
   recalculateContainerPosition(props: KnobVisualHelpersProps) {
     //Calculate position
-    const box = props.svgRef.getBoundingClientRect();
-    const vbox = utils.transformBoundingClientRectToViewport(box);
-    const halfWidth = box.width / 2;
+    const vbox = props.svgRef.getBoundingClientRect();
+    const halfWidth = vbox.width / 2;
 
     //Calculate current angle segment end point
     //Note: Not sure why we need to substract 90 here
