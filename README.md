@@ -2,6 +2,8 @@
 
 [Demo](https://hugozap.github.io/react-rotary-knob/storybook)
 
+[CodeSandbox basic example (uncontrolled)](https://codesandbox.io/s/xo0z2kkqq)
+
 ## Features
 
 - Precise mode: Doesn't jump on dragging (Increase drag distance for more precision)
