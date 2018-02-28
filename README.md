@@ -13,7 +13,7 @@
 
 ## Precision mode
 
-![precision mode](http://hugozap.com/react-rotary-knob/img/knob-basic2.gif)
+![precision mode](http://hugozap.github.io/react-rotary-knob/img/knob-basic2.gif)
 
 When precision mode is active (default), a minimum dragging distance
 is required to unlock de control. 
