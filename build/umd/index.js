@@ -5436,11 +5436,12 @@ function getAngleForPoint(x, y) {
 
 /**
  * Transforms the top/left variables of the rectangle
- * returned by getBoundingClientRect to viewport based coordinates
+ * returned by getBoundingClientRect to document based coordinates
  * without the scroll.
+ * UPDATE
  * @param {Rect} box 
  */
-function transformBoundingClientRectToViewport(box) {
+function transformBoundingClientRectToDocument(box) {
   var t;
   var scrollX = (((t = document.documentElement) || (t = document.body.parentNode)) && typeof t.scrollLeft == "number" ? t : document.body).scrollLeft;
 
@@ -5460,7 +5461,7 @@ exports.default = {
   toRadians: toRadians,
   getQuadrant: getQuadrant,
   getAngleForPoint: getAngleForPoint,
-  transformBoundingClientRectToViewport: transformBoundingClientRectToViewport
+  transformBoundingClientRectToDocument: transformBoundingClientRectToDocument
 };
 
 /***/ }),
@@ -10765,9 +10766,8 @@ var KnobVisualHelpers = function (_React$Component) {
     key: "recalculateContainerPosition",
     value: function recalculateContainerPosition(props) {
       //Calculate position
-      var box = props.svgRef.getBoundingClientRect();
-      var vbox = _utils2.default.transformBoundingClientRectToViewport(box);
-      var halfWidth = box.width / 2;
+      var vbox = props.svgRef.getBoundingClientRect();
+      var halfWidth = vbox.width / 2;
 
       //Calculate current angle segment end point
       //Note: Not sure why we need to substract 90 here
@@ -11264,7 +11264,7 @@ var Knob = function (_Component) {
   }, {
     key: "getValue",
     value: function getValue() {
-      return this.controlled ? this.props.value : this.state.uncontrolledValue;
+      return this.controlled === true ? this.props.value : this.state.uncontrolledValue;
     }
   }, {
     key: "setupDragging",
@@ -11274,20 +11274,15 @@ var Knob = function (_Component) {
       }
       // Add dragging behavior to selector element
       var self = this;
-      var box = elem.node().getBoundingClientRect();
-      var cx = box.width / 2;
-      var cy = box.height / 2;
-
-      //transform the bounding box to viewport coordinates (removes scroll)
-      var vbox = _utils2.default.transformBoundingClientRectToViewport(box);
+      var vbox = elem.node().getBoundingClientRect();
+      var cx = vbox.width / 2;
+      var cy = vbox.height / 2;
 
       function started() {
 
         var value = self.getValue();
         var initialAngle = self.scale(value);
-        console.log('initial Angle', initialAngle);
-        //recalculate box in case there's been scroll
-        vbox = _utils2.default.transformBoundingClientRectToViewport(box);
+        vbox = elem.node().getBoundingClientRect();;
         elem.classed("dragging", true);
         d3.event.on("drag", dragged).on("end", ended);
         //startPos = position relative to the box center
@@ -11333,22 +11328,22 @@ var Knob = function (_Component) {
             finalAngle -= 360;
           }
 
-          printDebugValues({
-            cx: cx,
-            cy: cy,
-            initialAngle: initialAngle,
-            startAngle: startAngle,
-            startPos: startPos,
-            currentPos: currentPos,
-            currentAngle: currentAngle,
-            deltaAngle: deltaAngle,
-            finalAngle: finalAngle
-          });
+          // printDebugValues({
+          //   cx,
+          //   cy,
+          //   initialAngle,
+          //   startAngle,
+          //   startPos,
+          //   currentPos,
+          //   currentAngle,
+          //   deltaAngle,
+          //   finalAngle,
+          // })
+
 
           if (monitoring) {
             self.onAngleChanged(finalAngle);
           }
-          console.log('distance from center', distanceFromCenter);
           self.setState(function () {
             return _extends({}, self.state, {
               dragDistance: distanceFromCenter,
@@ -11483,7 +11478,6 @@ var Knob = function (_Component) {
 Knob.defaultProps = {
   min: 0,
   max: 100,
-  value: 0,
   onChange: function onChange() {},
   skin: _knobdefaultskin2.default,
   format: function format(val) {
