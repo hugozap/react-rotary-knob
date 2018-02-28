@@ -16,7 +16,48 @@ class KnobApp extends React.Component {
 
   render() {
     return (
+      <div style={{textAlign:'center'}}>
+        
+        <h2 style={{textAlign:'center'}}>{this.state.value.toFixed(2)} </h2>
+
+        <Knob
+          style={{
+            width: "80px",
+            marginTop: "8rem",
+            height: "80px",
+            display: "inline-block"
+          }}
+          onChange={val => {
+            this.changeValue(val);
+          }}
+          min={0}
+          max={100}
+          value={this.state.value}
+        />
+      </div>
+    );
+  }
+}
+
+stories.add("Basic", () => {
+  return <div>
+     <KnobApp />
+     <div>
+       <pre>
+         {`
+  class KnobApp extends React.Component {
+  state = {
+    value: 0
+  };
+
+  changeValue(val) {
+    this.setState({ value: val });
+  }
+
+  render() {
+    return (
       <div>
+        
         <h2>{this.state.value.toFixed(2)} </h2>
 
         <Knob
@@ -37,10 +78,10 @@ class KnobApp extends React.Component {
       </div>
     );
   }
-}
-
-stories.add("Basic", () => {
-  return <KnobApp />;
+}`}
+       </pre>
+    </div>
+     </div>;
 });
 
 stories.add("Uncontrolled", () => {
