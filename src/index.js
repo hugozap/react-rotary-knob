@@ -134,12 +134,10 @@ class Knob extends Component<KnobProps, KnobState> {
   onAngleChanged(angle: number) {
     //Calculate domain value
     let domainValue = this.scale.invert(angle);
-    console.log('angleChanged, controlled:' + this.controlled)
     if(!this.controlled) {
       /**
        * If the mode is 'uncontrolled' we need to update our local state
        */
-      console.log('Will update state async')
       this.setState((st)=>{
         return {uncontrolledValue: domainValue}
       })
@@ -169,7 +167,6 @@ class Knob extends Component<KnobProps, KnobState> {
 
       let value = self.getValue();
       const initialAngle = self.scale(value);
-      console.log('initial Angle', initialAngle);
       vbox = elem.node().getBoundingClientRect();;
       elem.classed("dragging", true);
       d3.event.on("drag", dragged).on("end", ended);
@@ -239,7 +236,6 @@ class Knob extends Component<KnobProps, KnobState> {
         if (monitoring) {
           self.onAngleChanged(finalAngle);
         }
-        console.log('distance from center', distanceFromCenter)
         self.setState(()=>{
           return { 
           ...self.state,
@@ -302,7 +298,6 @@ class Knob extends Component<KnobProps, KnobState> {
     } = this.props;
 
     const currentValue:number = this.getValue();
-    console.log('render currentValue:', currentValue);
     const angle = this.scale(currentValue);
 
 
