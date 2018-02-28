@@ -1,13 +1,20 @@
 {
   "name": "react-rotary-knob",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Skinnable Rotary Knob for React",
   "main": "build/commonjs/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/hugozap/react-rotary-knob"
   },
-  "keywords": ["react", "knob", "dial", "slider", "rotary", "form"],
+  "keywords": [
+    "react",
+    "knob",
+    "dial",
+    "slider",
+    "rotary",
+    "form"
+  ],
   "peerDependencies": {
     "react": "^16.2.0"
   },
