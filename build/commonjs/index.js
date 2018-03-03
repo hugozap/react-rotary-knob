@@ -11430,6 +11430,7 @@ var Knob = function (_Component) {
             value: currentValue,
             min: min,
             max: max,
+            step: this.props.step,
             onChange: this.onFormControlChange.bind(this)
           }),
           _react2.default.createElement(
@@ -11476,7 +11477,8 @@ Knob.defaultProps = {
   },
   preciseMode: true,
   unlockDistance: 100,
-  defaultValue: 0
+  defaultValue: 0,
+  step: 1
 };
 exports.Knob = Knob;
 
