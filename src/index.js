@@ -35,7 +35,8 @@ type KnobProps = {
   onChange: (val: number) => void,
   style: any,
   preciseMode: boolean,
-  unlockDistance: number
+  unlockDistance: number,
+  step: number
 };
 
 type KnobState = {
@@ -85,7 +86,8 @@ class Knob extends Component<KnobProps, KnobState> {
     },
     preciseMode: true,
     unlockDistance: 100,
-    defaultValue: 0
+    defaultValue: 0,
+    step: 1
   };
   componentDidMount() {
     if(this.props.value == null ) {
@@ -334,6 +336,7 @@ class Knob extends Component<KnobProps, KnobState> {
             value={currentValue}
             min={min}
             max={max}
+            step={this.props.step}
             onChange={this.onFormControlChange.bind(this)}
           />
 

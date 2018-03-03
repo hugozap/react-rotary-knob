@@ -187,3 +187,23 @@ stories.add("Test scroll", () => {
     </div>
   );
 });
+
+
+
+stories.add("Step = 0.1", () => {
+  return (
+    <div>
+      <p>
+        Change `step` prop to change precision
+        when using the keyboard. Here
+        min = 0 , max = 1 and step = 0.1
+        Try using the keyboard to change the value.
+      </p>
+      <Knob
+        min={0}
+        max={1}
+        step={0.1}
+      />
+    </div>
+  );
+});

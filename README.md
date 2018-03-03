@@ -73,6 +73,8 @@ Props:
 | value | Control Value | 0 |
 | defaultValue | start value for uncontrolled mode | 0 |
 | onChange | Callback with the updated value | |
+| unlockDistance | Minimun drag distance required to unlock the knob | 100 |
+| step | the step distance (when using the keyboard arrows) | 1 |
 | skin | Skin object| |
 
 
