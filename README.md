@@ -9,7 +9,7 @@
 - Precise mode: Doesn't jump on dragging (Increase drag distance for more precision)
 - Works in both controlled (recommended) and uncontrolled mode.
 - Support arrow keys.
-- **Suspports custom skins**
+- **Supports custom skins**
 
 ## Precision mode
 
