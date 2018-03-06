@@ -207,3 +207,39 @@ stories.add("Step = 0.1", () => {
     </div>
   );
 });
+
+stories.add("Update attributes from skin", () => {
+  return (
+    <div>
+      <p>
+        The skin used updates the fill color of the SVG element
+        The value can be a function that uses the current value and other props
+        (See stories/testskin.js)
+        <b> Here, the color will change when  value > 50 </b>
+        <pre>
+{`
+updateAttributes: [
+  {
+    element:'#knob circle',
+    attrs: [
+      {
+        name:'fill',
+        value:(props,value)=> {
+            return value >=50 ? 'red': 'black'
+        }
+      }
+    ]
+  }
+]
+`}
+</pre>
+      </p>
+      <Knob
+        style={{marginLeft:'4rem'}}
+        skin={require('./testskin').default}
+        min={0}
+        max={100}
+      />
+    </div>
+  );
+});

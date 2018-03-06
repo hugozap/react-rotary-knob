@@ -15,6 +15,23 @@ import RotateView from './RotateView';
 import * as d3 from 'd3';
 import type {Point} from './Types'
 
+
+/**
+ * type definition for the skin system attribute modification element
+ */
+type AttributeSetValue = {
+  name: string,
+  value: (props:any, value:any) => string
+}
+
+/** 
+ * Type definition for the skin element manipulation block
+*/
+type UpdateElement = {
+  element: string,
+  content: ?(props:any, value:any) => string,
+  attrs: Array<AttributeSetValue>
+}
 /**
  * A skin consists of the svg code
  * and the knob element centerx and y (knobX, knobY)
@@ -22,7 +39,8 @@ import type {Point} from './Types'
 type Skin = {
   svg: string,
   knobX: number,
-  knobY: number
+  knobY: number,
+  updateAttributes: Array<UpdateElement>
 };
 
 type KnobProps = {
@@ -320,7 +338,29 @@ class Knob extends Component<KnobProps, KnobState> {
         top: "0",
         left: "-100%"
       }
+      
     };
+      //Get custom updates defined by the skin
+      //Transform the updateAttributes array into a SvgProxy array
+      const updateAttrs = skin.updateAttributes
+      const skinElemUpdates = updateAttrs && updateAttrs.map((elemUpdate, ix)=> {
+        let elemContent = null;
+        if(elemUpdate.content) {
+          elemContent = elemUpdate.content(this.props, currentValue);
+        }
+        let attributes = {};
+        //Call value function
+        //TODO: support string values
+        (elemUpdate.attrs || []).forEach((attr)=>{
+          
+          attributes[attr.name] = attr.value(this.props, currentValue)
+        });
+
+        return <SvgProxy key={ix}
+           selector={elemUpdate.element}
+           {...attributes}/>
+      })
+
     return (
       <React.Fragment>
         <div
@@ -353,6 +393,7 @@ class Knob extends Component<KnobProps, KnobState> {
               })`}
             />
             <SvgProxy selector="tspan">{this.props.format(currentValue)}</SvgProxy>
+            {skinElemUpdates}
           </Samy>
         </div>
         {this.state.svgRef && (
