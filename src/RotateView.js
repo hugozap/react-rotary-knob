@@ -2,7 +2,7 @@
 
 import React, { Component } from "react";
 import uuid from "uuid";
-import * as d3 from "d3";
+import {select} from 'd3-selection';
 
 type RotateViewProps = {
     angle: number,
@@ -34,13 +34,13 @@ type RotateViewProps = {
   
     renderControls(props: RotateViewProps) {
       const { r, cx, cy, angle } = props;
-      const svgRef = d3.select(props.svg || ".main-svg");
+      const svgRef = select(props.svg || ".main-svg");
       let container = svgRef;
       let knob = svgRef.select("#knob");
     }
   
     clearControls() {
-      const svgRef = d3.select(".main-svg");
+      const svgRef = select(".main-svg");
       let container = svgRef.select(this.controlSelector);
       container.remove();
     }

@@ -6,32 +6,34 @@
  */
 
 import React, { Component } from "react";
-import utils from  "./utils";
+import utils from "./utils";
 import { Samy, SvgProxy } from "react-samy-svg";
 import defaultSkin from "./knobdefaultskin";
 import { KnobVisualHelpers } from "./helpers/KnobVisualHelpers";
 import InternalInput from "./InternalInput";
-import RotateView from './RotateView';
-import * as d3 from 'd3';
-import type {Point} from './Types'
-
+import RotateView from "./RotateView";
+import {select, event} from "d3-selection";
+import type {Selection} from "d3-selection";
+import {drag} from "d3-drag";
+import {scaleLinear} from 'd3-scale';
+import type { Point } from "./Types";
 
 /**
  * type definition for the skin system attribute modification element
  */
 type AttributeSetValue = {
   name: string,
-  value: (props:any, value:any) => string
-}
+  value: (props: any, value: any) => string
+};
 
-/** 
+/**
  * Type definition for the skin element manipulation block
-*/
+ */
 type UpdateElement = {
   element: string,
-  content: ?(props:any, value:any) => string,
+  content: ?(props: any, value: any) => string,
   attrs: Array<AttributeSetValue>
-}
+};
 /**
  * A skin consists of the svg code
  * and the knob element centerx and y (knobX, knobY)
@@ -67,13 +69,13 @@ type KnobState = {
 };
 
 function printDebugValues(obj) {
-  console.log('------------')
-  Object.keys(obj).forEach((key)=>{
-    const value = typeof obj[key] === 'object' ? JSON.stringify(obj[key]) : obj[key]
-    console.log(`${key}: ${value}`)
-  })
-  console.log('------------')
-  
+  console.log("------------");
+  Object.keys(obj).forEach(key => {
+    const value =
+      typeof obj[key] === "object" ? JSON.stringify(obj[key]) : obj[key];
+    console.log(`${key}: ${value}`);
+  });
+  console.log("------------");
 }
 
 /**
@@ -83,15 +85,15 @@ class Knob extends Component<KnobProps, KnobState> {
   container: any;
   scale: any;
   inputRef: any;
-  controlled: boolean
+  controlled: boolean;
 
   state = {
     svgRef: null,
     dragging: false,
     dragDistance: 0,
-    mousePos: {x:0, y:0},
+    mousePos: { x: 0, y: 0 },
     valueAngle: 0,
-    uncontrolledValue: 0,
+    uncontrolledValue: 0
   };
 
   static defaultProps = {
@@ -108,25 +110,25 @@ class Knob extends Component<KnobProps, KnobState> {
     step: 1
   };
   componentDidMount() {
-    if(this.props.value == null ) {
+    if (this.props.value == null) {
       /**
        * If the component is not controlled
        * then the state variable uncontrolledValue
        * will be used to store the current value
-       */  
+       */
+
       this.controlled = false;
       this.setState({
         ...this.state,
         uncontrolledValue: this.props.defaultValue
-      })
-
+      });
     } else {
       this.controlled = true;
     }
-    this.setupDragging(d3.select(this.container));
+    this.setupDragging(select(this.container));
   }
 
-  componentWillReceiveProps(nextProps:KnobProps) {
+  componentWillReceiveProps(nextProps: KnobProps) {
     //should recalculate scale?
     const pmin = this.props.min;
     const pmax = this.props.max;
@@ -134,8 +136,7 @@ class Knob extends Component<KnobProps, KnobState> {
     const nmax = nextProps.max;
 
     if (pmin != nmin || pmax != nmax) {
-      this.scale = d3
-        .scaleLinear()
+      this.scale = scaleLinear()
         .domain([nmin, nmax])
         .range([0, 359]);
     }
@@ -154,13 +155,13 @@ class Knob extends Component<KnobProps, KnobState> {
   onAngleChanged(angle: number) {
     //Calculate domain value
     let domainValue = this.scale.invert(angle);
-    if(!this.controlled) {
+    if (!this.controlled) {
       /**
        * If the mode is 'uncontrolled' we need to update our local state
        */
-      this.setState((st)=>{
-        return {uncontrolledValue: domainValue}
-      })
+      this.setState(st => {
+        return { uncontrolledValue: domainValue };
+      });
     }
     this.props.onChange(domainValue);
   }
@@ -168,11 +169,13 @@ class Knob extends Component<KnobProps, KnobState> {
   /**
    * Returns the current value (depending on controlled/uncontrolled mode)
    */
-  getValue():number {
-    return this.controlled === true ? this.props.value : this.state.uncontrolledValue;
+  getValue(): number {
+    return this.controlled === true
+      ? this.props.value
+      : this.state.uncontrolledValue;
   }
 
-  setupDragging(elem: d3.Selection<any>) {
+  setupDragging(elem: Selection<any>) {
     if (elem == null) {
       return;
     }
@@ -181,40 +184,40 @@ class Knob extends Component<KnobProps, KnobState> {
     let vbox = elem.node().getBoundingClientRect();
     const cx = vbox.width / 2;
     const cy = vbox.height / 2;
-    
-    
-    function started() {
 
+    function started() {
       let value = self.getValue();
       const initialAngle = self.scale(value);
-      vbox = elem.node().getBoundingClientRect();;
+      vbox = elem.node().getBoundingClientRect();
       elem.classed("dragging", true);
-      d3.event.on("drag", dragged).on("end", ended);
+      event.on("drag", dragged).on("end", ended);
       //startPos = position relative to the box center
       //Note: the d3 event container is the same element, so coordinates
       //are relative to it.
-      let startPos = { x: d3.event.x - cx, y: d3.event.y - cy };
+      let startPos = { x: event.x - cx, y: event.y - cy };
       let startAngle = utils.getAngleForPoint(startPos.x, startPos.y);
       let lastPos = startPos;
       let lastAngle = utils.getAngleForPoint(lastPos.x, lastPos.y);
       //in precise mode, we won't monitor angle change unless the distance > unlockDistance
       let monitoring = false;
-      self.setState({ ...self.state, dragging: true, dragDistance: 0,
-        mousePos: {x: d3.event.sourceEvent.clientX, y: d3.event.sourceEvent.clientY}
+      self.setState({
+        ...self.state,
+        dragging: true,
+        dragDistance: 0,
+        mousePos: {
+          x: event.sourceEvent.clientX,
+          y: event.sourceEvent.clientY
+        }
       });
-      
 
       function dragged() {
-        let currentPos = { x: d3.event.x - cx, y: d3.event.y - cy };
+        let currentPos = { x: event.x - cx, y: event.y - cy };
         const distanceFromCenter = Math.sqrt(
           Math.pow(currentPos.x, 2) + Math.pow(currentPos.y, 2)
         );
 
         if (self.props.preciseMode) {
-          if (
-            !monitoring &&
-            distanceFromCenter >= self.props.unlockDistance
-          ) {
+          if (!monitoring && distanceFromCenter >= self.props.unlockDistance) {
             //Start monitoring!
             //Reset startPos y startAngle
             startPos = currentPos;
@@ -226,17 +229,17 @@ class Knob extends Component<KnobProps, KnobState> {
         }
 
         let currentAngle = utils.getAngleForPoint(currentPos.x, currentPos.y);
-        
+
         const deltaAngle = currentAngle - startAngle;
-        
+
         lastPos = currentPos;
-        let finalAngle = (initialAngle + deltaAngle);
-      
-        if( finalAngle < 0 ) {
+        let finalAngle = initialAngle + deltaAngle;
+
+        if (finalAngle < 0) {
           //E.g -1 turns 359
-          finalAngle+=360;
-        } else if (finalAngle > 360 ) {
-          finalAngle-=360;
+          finalAngle += 360;
+        } else if (finalAngle > 360) {
+          finalAngle -= 360;
         }
 
         // printDebugValues({
@@ -251,19 +254,20 @@ class Knob extends Component<KnobProps, KnobState> {
         //   finalAngle,
         // })
 
-  
-
         if (monitoring) {
           self.onAngleChanged(finalAngle);
         }
-        self.setState(()=>{
-          return { 
-          ...self.state,
-          dragDistance: distanceFromCenter, 
-          mousePos: {x: d3.event.sourceEvent.clientX, y: d3.event.sourceEvent.clientY},
-          valueAngle: monitoring ? finalAngle : initialAngle 
-        }});
-
+        self.setState(() => {
+          return {
+            ...self.state,
+            dragDistance: distanceFromCenter,
+            mousePos: {
+              x: event.sourceEvent.clientX,
+              y: event.sourceEvent.clientY
+            },
+            valueAngle: monitoring ? finalAngle : initialAngle
+          };
+        });
       }
 
       function ended() {
@@ -275,32 +279,31 @@ class Knob extends Component<KnobProps, KnobState> {
       }
     }
 
-    const drag = d3.drag();
+    const dragInstance = drag();
     //Change the container to the element itself so the
     //event.x and y are relative to the element , not its parent
-    drag.container(function() {
+    dragInstance.container(function() {
       return elem.node();
     });
-    elem.call(drag.on("start", started));
+    elem.call(dragInstance.on("start", started));
   }
 
   componentWillMount() {
-    this.scale = d3
-      .scaleLinear()
+    this.scale = scaleLinear()
       .domain([this.props.min, this.props.max])
       .range([0, 360]);
   }
 
-   onFormControlChange(newVal:number) {
-    if(!this.controlled) {
+  onFormControlChange(newVal: number) {
+    if (!this.controlled) {
       /**
        * If the mode is 'uncontrolled' we need to update our local state
        */
-      this.setState({...this.state, uncontrolledValue: newVal})
+      this.setState({ ...this.state, uncontrolledValue: newVal });
     }
 
     this.props.onChange(newVal);
-  };
+  }
 
   render() {
     const {
@@ -317,9 +320,8 @@ class Knob extends Component<KnobProps, KnobState> {
       ...rest
     } = this.props;
 
-    const currentValue:number = this.getValue();
+    const currentValue: number = this.getValue();
     const angle = this.scale(currentValue);
-
 
     const styles = {
       container: Object.assign(
@@ -338,28 +340,28 @@ class Knob extends Component<KnobProps, KnobState> {
         top: "0",
         left: "-100%"
       }
-      
     };
-      //Get custom updates defined by the skin
-      //Transform the updateAttributes array into a SvgProxy array
-      const updateAttrs = skin.updateAttributes
-      const skinElemUpdates = updateAttrs && updateAttrs.map((elemUpdate, ix)=> {
+    //Get custom updates defined by the skin
+    //Transform the updateAttributes array into a SvgProxy array
+    const updateAttrs = skin.updateAttributes;
+    const skinElemUpdates =
+      updateAttrs &&
+      updateAttrs.map((elemUpdate, ix) => {
         let elemContent = null;
-        if(elemUpdate.content) {
+        if (elemUpdate.content) {
           elemContent = elemUpdate.content(this.props, currentValue);
         }
         let attributes = {};
         //Call value function
         //TODO: support string values
-        (elemUpdate.attrs || []).forEach((attr)=>{
-          
-          attributes[attr.name] = attr.value(this.props, currentValue)
+        (elemUpdate.attrs || []).forEach(attr => {
+          attributes[attr.name] = attr.value(this.props, currentValue);
         });
 
-        return <SvgProxy key={ix}
-           selector={elemUpdate.element}
-           {...attributes}/>
-      })
+        return (
+          <SvgProxy key={ix} selector={elemUpdate.element} {...attributes} />
+        );
+      });
 
     return (
       <React.Fragment>
@@ -392,7 +394,9 @@ class Knob extends Component<KnobProps, KnobState> {
                 skin.knobY
               })`}
             />
-            <SvgProxy selector="tspan">{this.props.format(currentValue)}</SvgProxy>
+            <SvgProxy selector="tspan">
+              {this.props.format(currentValue)}
+            </SvgProxy>
             {skinElemUpdates}
           </Samy>
         </div>
