@@ -11158,6 +11158,15 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 /**
+ * type definition for the skin system attribute modification element
+ */
+
+
+/** 
+ * Type definition for the skin element manipulation block
+*/
+
+/**
  * A skin consists of the svg code
  * and the knob element centerx and y (knobX, knobY)
  */
@@ -11421,7 +11430,29 @@ var Knob = function (_Component) {
           top: "0",
           left: "-100%"
         }
+
       };
+      //Get custom updates defined by the skin
+      //Transform the updateAttributes array into a SvgProxy array
+      var updateAttrs = skin.updateAttributes;
+      var skinElemUpdates = updateAttrs && updateAttrs.map(function (elemUpdate, ix) {
+        var elemContent = null;
+        if (elemUpdate.content) {
+          elemContent = elemUpdate.content(_this2.props, currentValue);
+        }
+        var attributes = {};
+        //Call value function
+        //TODO: support string values
+        (elemUpdate.attrs || []).forEach(function (attr) {
+
+          attributes[attr.name] = attr.value(_this2.props, currentValue);
+        });
+
+        return _react2.default.createElement(_reactSamySvg.SvgProxy, _extends({ key: ix,
+          selector: elemUpdate.element
+        }, attributes));
+      });
+
       return _react2.default.createElement(
         _react2.default.Fragment,
         null,
@@ -11458,7 +11489,8 @@ var Knob = function (_Component) {
               _reactSamySvg.SvgProxy,
               { selector: "tspan" },
               this.props.format(currentValue)
-            )
+            ),
+            skinElemUpdates
           )
         ),
         this.state.svgRef && _react2.default.createElement(_RotateView2.default, { svg: this.state.svgRef, angle: angle }),
