@@ -5427,11 +5427,6 @@ var Knob = function (_Component) {
               selector: "#knob",
               transform: "$ORIGINAL rotate(" + angle + ", " + skin.knobX + ", " + skin.knobY + ")"
             }),
-            _react2.default.createElement(
-              _reactSamySvg.SvgProxy,
-              { selector: "tspan" },
-              this.props.format(currentValue)
-            ),
             skinElemUpdates
           )
         ),
