@@ -394,9 +394,6 @@ class Knob extends Component<KnobProps, KnobState> {
                 skin.knobY
               })`}
             />
-            <SvgProxy selector="tspan">
-              {this.props.format(currentValue)}
-            </SvgProxy>
             {skinElemUpdates}
           </Samy>
         </div>
