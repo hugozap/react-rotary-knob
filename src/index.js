@@ -359,7 +359,7 @@ class Knob extends Component<KnobProps, KnobState> {
         });
 
         return (
-          <SvgProxy key={ix} selector={elemUpdate.element} {...attributes} />
+          <SvgProxy key={ix} selector={elemUpdate.element} {...attributes}>{elemContent}</SvgProxy>
         );
       });
 

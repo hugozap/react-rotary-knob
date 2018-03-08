@@ -5383,7 +5383,11 @@ var Knob = function (_Component) {
           attributes[attr.name] = attr.value(_this2.props, currentValue);
         });
 
-        return _react2.default.createElement(_reactSamySvg.SvgProxy, _extends({ key: ix, selector: elemUpdate.element }, attributes));
+        return _react2.default.createElement(
+          _reactSamySvg.SvgProxy,
+          _extends({ key: ix, selector: elemUpdate.element }, attributes),
+          elemContent
+        );
       });
 
       return _react2.default.createElement(
