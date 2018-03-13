@@ -78,6 +78,11 @@ Props:
 | skin | Skin object| |
 
 
-### Custom skin guide
+### Custom skins
 
-TODO
+See defaultSkin.js for an example.
+
+* Need custom skins? Get the [the custom skin pack, 18 HQ skins for the rotary knob.](https://codecanyon.net/item/react-rotary-knob-skin-pack/21567405)
+<a href="https://codecanyon.net/item/react-rotary-knob-skin-pack/21567405">
+![skin pack](hugozap.github.io/img/react-rotary-knob-skins-preview590x300.jpg)
+</a>
