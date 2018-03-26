@@ -5399,6 +5399,7 @@ var Knob = function (_Component) {
         );
       });
 
+      console.log('skin element updates:');
       return _react2.default.createElement(
         _react2.default.Fragment,
         null,

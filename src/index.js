@@ -363,6 +363,7 @@ class Knob extends Component<KnobProps, KnobState> {
         );
       });
 
+    console.log('skin element updates:', skinElemUpdates)
     return (
       <React.Fragment>
         <div

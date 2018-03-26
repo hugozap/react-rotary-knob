@@ -2,12 +2,13 @@ import React from "react";
 import { storiesOf } from "@storybook/react";
 import { action } from "@storybook/addon-actions";
 import { Knob } from "../src/index";
+import textskin from '../textskin'
 
 const stories = storiesOf("Knob", module);
 
 class KnobApp extends React.Component {
   state = {
-    value: 0
+    value: 50
   };
 
   changeValue(val) {
@@ -21,6 +22,8 @@ class KnobApp extends React.Component {
         <h2 style={{textAlign:'center'}}>{this.state.value.toFixed(2)} </h2>
 
         <Knob
+          skin={textskin}
+        
           style={{
             width: "80px",
             marginTop: "8rem",
@@ -207,6 +210,14 @@ stories.add("Step = 0.1", () => {
     </div>
   );
 });
+
+stories.add('Start value set, text skin', ()=>{
+ 
+
+  return (
+    <Knob style={{width:'300px', height:'300px'}} min={0} max={100} defaultValue={50} skin={textskin} />
+  )
+})
 
 stories.add("Update attributes from skin", () => {
   return (
