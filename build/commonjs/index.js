@@ -4510,10 +4510,7 @@ var RotateView = function (_Component) {
   }, {
     key: "renderControls",
     value: function renderControls(props) {
-      var r = props.r,
-          cx = props.cx,
-          cy = props.cy,
-          angle = props.angle;
+      var angle = props.angle;
 
       var svgRef = (0, _d3Selection.select)(props.svg || ".main-svg");
       var container = svgRef;
@@ -5390,7 +5387,6 @@ var Knob = function (_Component) {
         );
       });
 
-      console.log('skin element updates:');
       return _react2.default.createElement(
         _react2.default.Fragment,
         null,
@@ -10036,15 +10032,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Samy = function (_React$Component) {
   _inherits(Samy, _React$Component);
 
-  _createClass(Samy, [{
-    key: "getChildContext",
-    value: function getChildContext() {
-      return {
-        svg: this.state.svg
-      };
-    }
-  }]);
-
   function Samy(props) {
     _classCallCheck(this, Samy);
 
@@ -10063,17 +10050,16 @@ var Samy = function (_React$Component) {
   }
 
   _createClass(Samy, [{
-    key: "onSVGReady",
-    value: function onSVGReady(svgNode) {
-      var _this2 = this;
-
-      //Run after component has mounted
-      setTimeout(function () {
-        if (_this2.mounted) {
-          _this2.setState(_extends({}, _this2.state, { svg: svgNode }));
-          _this2.props.onSVGReady(svgNode);
-        }
-      }, 0);
+    key: "getChildContext",
+    value: function getChildContext() {
+      return {
+        svg: this.state.svg
+      };
+    }
+  }, {
+    key: "componentDidMount",
+    value: function componentDidMount() {
+      this.mounted = true;
     }
   }, {
     key: "componentWillUnmount",
@@ -10081,9 +10067,17 @@ var Samy = function (_React$Component) {
       this.mounted = false;
     }
   }, {
-    key: "componentDidMount",
-    value: function componentDidMount() {
-      this.mounted = true;
+    key: "onSVGReady",
+    value: function onSVGReady(svgNode) {
+      var _this2 = this;
+
+      // Run after component has mounted
+      setTimeout(function () {
+        if (_this2.mounted) {
+          _this2.setState(_extends({}, _this2.state, { svg: svgNode }));
+          _this2.props.onSVGReady(svgNode);
+        }
+      }, 0);
     }
   }, {
     key: "render",
@@ -10113,23 +10107,27 @@ var Samy = function (_React$Component) {
   return Samy;
 }(_react2.default.Component);
 
-Samy.propTypes = {
-  path: _propTypes2.default.string,
-  //if we have the svg text we can use that instead of loading it with ajax
-  svgXML: _propTypes2.default.string,
-  onSVGReady: _propTypes2.default.func,
-  style: _propTypes2.default.object
-};
+exports.default = Samy;
+
+
 Samy.childContextTypes = {
   svg: _propTypes2.default.object
 };
 
-
-Samy.defaultProps = {
-  onSVGReady: function onSVGReady() {}
+Samy.propTypes = {
+  path: _propTypes2.default.string,
+  svgXML: _propTypes2.default.string,
+  onSVGReady: _propTypes2.default.func,
+  style: _propTypes2.default.object, // eslint-disable-line
+  children: _propTypes2.default.any // eslint-disable-line
 };
 
-exports.default = Samy;
+Samy.defaultProps = {
+  path: null,
+  svgXML: null,
+  onSVGReady: function onSVGReady() {},
+  style: null
+};
 
 /***/ }),
 /* 4 */
@@ -10143,8 +10141,6 @@ Object.defineProperty(exports, "__esModule", {
 });
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _react = __webpack_require__(0);
 
@@ -10162,40 +10158,20 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function noop() {}
 
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+var SVGLoader = function SVGLoader(props) {
+  var path = props.path,
+      onSVGReady = props.onSVGReady,
+      svgXML = props.svgXML,
+      rest = _objectWithoutProperties(props, ["path", "onSVGReady", "svgXML"]);
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var SVGLoader = function (_React$Component) {
-  _inherits(SVGLoader, _React$Component);
-
-  function SVGLoader(props) {
-    _classCallCheck(this, SVGLoader);
-
-    return _possibleConstructorReturn(this, (SVGLoader.__proto__ || Object.getPrototypeOf(SVGLoader)).call(this, props));
-  }
-
-  _createClass(SVGLoader, [{
-    key: "render",
-    value: function render() {
-      var _props = this.props,
-          path = _props.path,
-          onSVGReady = _props.onSVGReady,
-          svgXML = _props.svgXML,
-          props = _objectWithoutProperties(_props, ["path", "onSVGReady", "svgXML"]);
-
-      return _react2.default.createElement(_reactSvg2.default, _extends({
-        path: this.props.path,
-        callback: this.props.onSVGReady,
-        svgXML: svgXML
-      }, props));
-    }
-  }]);
-
-  return SVGLoader;
-}(_react2.default.Component);
+  return _react2.default.createElement(_reactSvg2.default, _extends({
+    path: path,
+    callback: onSVGReady || noop,
+    svgXML: svgXML
+  }, rest));
+};
 
 SVGLoader.propTypes = {
   path: _propTypes2.default.string,
@@ -10204,7 +10180,9 @@ SVGLoader.propTypes = {
 };
 
 SVGLoader.defaultProps = {
-  onSVGReady: function onSVGReady() {}
+  path: null,
+  onSVGReady: noop,
+  svgXML: null
 };
 
 exports.default = SVGLoader;
@@ -10275,32 +10253,30 @@ var ReactSVG = function (_React$Component) {
   _inherits(ReactSVG, _React$Component);
 
   function ReactSVG() {
-    var _ref;
-
-    var _temp, _this, _ret;
-
     _classCallCheck(this, ReactSVG);
 
-    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
+    var _this = _possibleConstructorReturn(this, (ReactSVG.__proto__ || Object.getPrototypeOf(ReactSVG)).call(this));
 
-    return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = ReactSVG.__proto__ || Object.getPrototypeOf(ReactSVG)).call.apply(_ref, [this].concat(args))), _this), _this.refCallback = function (container) {
-      if (!container) {
-        return;
-      }
-
-      _this.container = container;
-      _this.renderSVG();
-    }, _temp), _possibleConstructorReturn(_this, _ret);
+    _this.refCallback = _this.refCallback.bind(_this);
+    return _this;
   }
 
   _createClass(ReactSVG, [{
     key: 'componentWillReceiveProps',
     value: function componentWillReceiveProps(nextProps) {
-      if (this.props.path != nextProps.path || this.props.svgXML != nextProps.svgXML) {
+      if (this.props.path !== nextProps.path || this.props.svgXML !== nextProps.svgXML) {
         this.renderSVG(nextProps);
       }
+    }
+  }, {
+    key: 'refCallback',
+    value: function refCallback(container) {
+      if (!container) {
+        return;
+      }
+
+      this.container = container;
+      this.renderSVG();
     }
   }, {
     key: 'renderSVG',
@@ -10317,26 +10293,25 @@ var ReactSVG = function (_React$Component) {
           className = props.className,
           htmlProps = _objectWithoutProperties(props, ['callback', 'path', 'svgXML', 'className']);
 
-      //Update SVG element
-
+      // Update SVG element 
 
       SVGInjector(svgNode, {
         each: function each(err) {
           if (err) {
-            console.log('Error:', err);
+            throw new Error(err);
           }
-          //each is called when the svg was injected and is ready
+          // each is called when the svg was injected and is ready
           callback(_this2.container);
         },
         svgXML: svgXML
       }, function () {
-        //SVGInjector will override the SVG attributes set by react props
-        //Re apply them (except the special `style` prop)
-        //by props. So we need to re apply them.
+        // SVGInjector will override the SVG attributes set by react props
+        // Re apply them (except the special `style` prop)
+        // by props. So we need to re apply them.
         if (svgNode && htmlProps) {
-          Object.keys(htmlProps).reduce(function (svgNode, key) {
-            if (key != 'style') {
-              svgNode.setAttribute(key, htmlProps[key]);
+          Object.keys(htmlProps).reduce(function (svgNode_, key) {
+            if (key !== 'style') {
+              svgNode_.setAttribute(key, htmlProps[key]);
             }
             return svgNode;
           }, svgNode);
@@ -10359,15 +10334,20 @@ var ReactSVG = function (_React$Component) {
   return ReactSVG;
 }(_react2.default.Component);
 
+exports.default = ReactSVG;
+
+
 ReactSVG.defaultProps = {
-  callback: function callback() {}
+  callback: function callback() {},
+  path: null,
+  svgXML: null
 };
+
 ReactSVG.propTypes = {
   callback: _propTypes2.default.func,
   path: _propTypes2.default.string,
   svgXML: _propTypes2.default.string
 };
-exports.default = ReactSVG;
 
 /***/ }),
 /* 6 */
@@ -10378,6 +10358,7 @@ exports.default = ReactSVG;
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
+/* eslint-disable */
 /**
  * Changes:
  * - Don't replace the node.  Justs its innerHTML
@@ -10872,7 +10853,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var SvgProxy = function (_React$Component) {
   _inherits(SvgProxy, _React$Component);
 
-  function SvgProxy(props, context) {
+  function SvgProxy(props) {
     _classCallCheck(this, SvgProxy);
 
     var _this = _possibleConstructorReturn(this, (SvgProxy.__proto__ || Object.getPrototypeOf(SvgProxy)).call(this, props));
@@ -10898,23 +10879,21 @@ var SvgProxy = function (_React$Component) {
   }, {
     key: "componentWillReceiveProps",
     value: function componentWillReceiveProps(nextProps, nextContext) {
-      //If a prop has changed then update the element
+      // If a prop has changed then update the element
       this.updateSvgElements(nextProps, nextContext);
     }
   }, {
     key: "updateSvgElements",
     value: function updateSvgElements(nextProps, nextContext) {
-      var _this2 = this;
-
       var elemRefs = this.state.elemRefs;
 
 
       if (nextContext.svg && elemRefs.length === 0) {
-        //We don't have the svg element reference.
+        // We don't have the svg element reference.
 
         var nodes = Array.from(nextContext.svg.querySelectorAll(this.props.selector));
         if (nodes.length === 0 && ["svg", "root"].includes(this.props.selector)) {
-          //If the selector equls 'svg' or 'root' use the svg node
+          // If the selector equls 'svg' or 'root' use the svg node
           nodes.push(nextContext.svg);
         }
         // Call the onElementSelected callback with the element (or array)
@@ -10927,60 +10906,36 @@ var SvgProxy = function (_React$Component) {
       }
 
       if (elemRefs) {
-        var _loop = function _loop(propName) {
-          //Ignore component props
-          if (["selector", "onElementSelected"].includes(propName)) {
-            return "continue";
-          }
-          //Apply attributes to node
-          elemRefs.forEach(function (elem) {
-            if (typeof nextProps[propName] === "function") {
-              elem[propName.toLowerCase()] = nextProps[propName];
-            } else {
-              //Discard non string props 
-              //TODO: Support style conversion
-              if (typeof nextProps[propName] != 'string') {
-                return;
+        var propkeys = Object.keys(nextProps);
+        for (var i = 0; i < propkeys.length; i += 1) {
+          var propName = propkeys[i];
+          // Ignore component props
+          var ownprop = ["selector", "onElementSelected"].includes(propName);
+          if (!ownprop) {
+            // Apply attributes to node
+            for (var elemix = 0; elemix < elemRefs.length; elemix += 1) {
+              var elem = elemRefs[elemix];
+              if (typeof nextProps[propName] === "function") {
+                elem[propName.toLowerCase()] = nextProps[propName];
+              } else {
+                // Discard non string props
+                // TODO: Support style conversion
+                if (typeof nextProps[propName] !== "string") {
+                  return;
+                }
+                // Save originalValue
+                if (this.originalValues[propName] == null) {
+                  this.originalValues[propName] = elem.getAttributeNS(null, propName) || "";
+                }
+                // TODO: Optimization, avoid using replace everytime
+                var attrValue = nextProps[propName].replace("$ORIGINAL", this.originalValues[propName]);
+                // https://developer.mozilla.org/en/docs/Web/SVG/Namespaces_Crash_Course
+                elem.setAttributeNS(null, propName, attrValue);
+                // Set inner text
+                if (typeof nextProps.children === "string" && nextProps.children.trim().length) {
+                  elem.textContent = nextProps.children;
+                }
               }
-              //Save originalValue
-              if (_this2.originalValues[propName] == null) {
-                _this2.originalValues[propName] = elem.getAttributeNS(null, propName) || '';
-              }
-              //TODO: Optimization, avoid using replace everytime
-              var attrValue = nextProps[propName].replace('$ORIGINAL', _this2.originalValues[propName]);
-              //https://developer.mozilla.org/en/docs/Web/SVG/Namespaces_Crash_Course
-              elem.setAttributeNS(null, propName, attrValue);
-              //Set inner text
-              if (typeof _this2.props.children === "string" && _this2.props.children.trim().length) {
-                elem.textContent = _this2.props.children;
-              }
-            }
-          });
-        };
-
-        var _iteratorNormalCompletion = true;
-        var _didIteratorError = false;
-        var _iteratorError = undefined;
-
-        try {
-          for (var _iterator = Object.keys(nextProps)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-            var propName = _step.value;
-
-            var _ret = _loop(propName);
-
-            if (_ret === "continue") continue;
-          }
-        } catch (err) {
-          _didIteratorError = true;
-          _iteratorError = err;
-        } finally {
-          try {
-            if (!_iteratorNormalCompletion && _iterator.return) {
-              _iterator.return();
-            }
-          } finally {
-            if (_didIteratorError) {
-              throw _iteratorError;
             }
           }
         }
@@ -10996,15 +10951,17 @@ var SvgProxy = function (_React$Component) {
   return SvgProxy;
 }(_react2.default.Component);
 
+exports.default = SvgProxy;
+
+
 SvgProxy.propTypes = {
   selector: _propTypes2.default.string.isRequired,
   onElementSelected: _propTypes2.default.func
 };
+
 SvgProxy.contextTypes = {
   svg: _propTypes2.default.object
 };
-exports.default = SvgProxy;
-
 
 SvgProxy.defaultProps = {
   onElementSelected: function onElementSelected() {}

@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 1.0.13
+
+- samy dependency updated
+- setup jest 
+- added tests
+
 ## 1.0.7
 - build updated
 

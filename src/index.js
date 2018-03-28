@@ -12,10 +12,10 @@ import defaultSkin from "./knobdefaultskin";
 import { KnobVisualHelpers } from "./helpers/KnobVisualHelpers";
 import InternalInput from "./InternalInput";
 import RotateView from "./RotateView";
-import {select, event} from "d3-selection";
-import type {Selection} from "d3-selection";
-import {drag} from "d3-drag";
-import {scaleLinear} from 'd3-scale';
+import { select, event } from "d3-selection";
+import type { Selection } from "d3-selection";
+import { drag } from "d3-drag";
+import { scaleLinear } from "d3-scale";
 import type { Point } from "./Types";
 
 /**
@@ -359,11 +359,12 @@ class Knob extends Component<KnobProps, KnobState> {
         });
 
         return (
-          <SvgProxy key={ix} selector={elemUpdate.element} {...attributes}>{elemContent}</SvgProxy>
+          <SvgProxy key={ix} selector={elemUpdate.element} {...attributes}>
+            {elemContent}
+          </SvgProxy>
         );
       });
 
-    console.log('skin element updates:', skinElemUpdates)
     return (
       <React.Fragment>
         <div

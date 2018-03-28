@@ -7,7 +7,7 @@ type InternalInputProps = {
     value: number,
     step: ?number,
     inputRef: (elem: any) => void,
-    onChange: () => void
+    onChange: (val: number) => void
   };
   
   class InternalInput extends React.Component<InternalInputProps> {

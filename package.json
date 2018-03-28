@@ -35,10 +35,14 @@
     "build:umd": "webpack --config=webpack.config.umd.js",
     "storybook": "start-storybook -p 9001 -c .storybook",
     "buildstorybook": "build-storybook -c .storybook -o ./docs/storybook",
+    "prepublishOnly": "yarn build && yarn",
     "release": "yarn build && yarn buildstorybook && yarn version && git push origin master"
   },
   "author": {
     "name": "Hugo Zapata"
+  },
+  "jest": {
+    "verbose": true
   },
   "devDependencies": {
     "@storybook/react": "^3.3.8",

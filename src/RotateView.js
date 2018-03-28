@@ -33,7 +33,7 @@ type RotateViewProps = {
     }
   
     renderControls(props: RotateViewProps) {
-      const { r, cx, cy, angle } = props;
+      const { angle } = props;
       const svgRef = select(props.svg || ".main-svg");
       let container = svgRef;
       let knob = svgRef.select("#knob");
