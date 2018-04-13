@@ -82,6 +82,8 @@ Props:
 
 See defaultSkin.js for an example.
 
+[Custom skins demo (uses flubber to morph paths)](https://hugozap.github.io/react-rotary-knob-custom-skins-demo/)
+
 * Need custom skins? Get the [the custom skin pack, 18 HQ skins for the rotary knob.](https://codecanyon.net/item/react-rotary-knob-skin-pack/21567405)
 <a href="https://codecanyon.net/item/react-rotary-knob-skin-pack/21567405">
   <img src="https://hugozap.github.io/img/react-rotary-knob-skins-preview590x300.jpg"/>
