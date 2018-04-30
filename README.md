@@ -6,7 +6,7 @@
 
 [CodeSandbox custom skin pack](https://codesandbox.io/s/6w9vqn0x3w)
 
-💙  [Get the New skin pack (18 skin set) Custom skin pack for free](https://github.com/hugozap/react-rotary-knob-skin-pack)
+💙  [Get the new skin pack (18 skin set)](https://github.com/hugozap/react-rotary-knob-skin-pack)
 
 ## Features
 
