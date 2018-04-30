@@ -4,6 +4,10 @@
 
 [CodeSandbox basic example (uncontrolled)](https://codesandbox.io/s/xo0z2kkqq)
 
+[CodeSandbox custom skin pack](https://codesandbox.io/s/6w9vqn0x3w)
+
+💙  [Get the New skin pack (18 skin set) Custom skin pack for free](https://github.com/hugozap/react-rotary-knob-skin-pack)
+
 ## Features
 
 - Precise mode: Doesn't jump on dragging (Increase drag distance for more precision)
@@ -82,9 +86,6 @@ Props:
 
 See defaultSkin.js for an example.
 
-[Custom skins demo (uses flubber to morph paths)](https://hugozap.github.io/react-rotary-knob-custom-skins-demo/)
+- [Custom skin pack](https://github.com/hugozap/react-rotary-knob-skin-pack)
 
-* Need custom skins? Get the [the custom skin pack, 18 HQ skins for the rotary knob.](https://codecanyon.net/item/react-rotary-knob-skin-pack/21567405)
-<a href="https://codecanyon.net/item/react-rotary-knob-skin-pack/21567405">
-  <img src="https://hugozap.github.io/img/react-rotary-knob-skins-preview590x300.jpg"/>
-</a>
+- [Custom skins demo (uses flubber to morph paths)](https://hugozap.github.io/react-rotary-knob-custom-skins-demo/)
