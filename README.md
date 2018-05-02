@@ -15,7 +15,7 @@
 - Support arrow keys.
 - **Supports custom skins**
 
-<a href="https://github.com/hugozap/svgmt"> <img src="builtwith-svgmt.png"> </a>
+<a href="https://github.com/hugozap/react-svgmt"> <img src="builtwith-svgmt.png"> </a>
 
 
 ## Precision mode
