@@ -418,6 +418,8 @@ var slice = array.slice;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__src_lab__ = __webpack_require__(116);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return __WEBPACK_IMPORTED_MODULE_1__src_lab__["b"]; });
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return __WEBPACK_IMPORTED_MODULE_1__src_lab__["a"]; });
+/* unused harmony reexport lch */
+/* unused harmony reexport gray */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__src_cubehelix__ = __webpack_require__(115);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return __WEBPACK_IMPORTED_MODULE_2__src_cubehelix__["a"]; });
 
@@ -5061,7 +5063,7 @@ var _utils = __webpack_require__(38);
 
 var _utils2 = _interopRequireDefault(_utils);
 
-var _reactSamySvg = __webpack_require__(88);
+var _reactSvgmt = __webpack_require__(88);
 
 var _knobdefaultskin = __webpack_require__(85);
 
@@ -5390,7 +5392,7 @@ var Knob = function (_Component) {
         });
 
         return _react2.default.createElement(
-          _reactSamySvg.SvgProxy,
+          _reactSvgmt.SvgProxy,
           _extends({ key: ix, selector: elemUpdate.element }, attributes),
           elemContent
         );
@@ -5417,14 +5419,14 @@ var Knob = function (_Component) {
             onChange: this.onFormControlChange.bind(this)
           }),
           _react2.default.createElement(
-            _reactSamySvg.Samy,
+            _reactSvgmt.SvgLoader,
             {
               width: "100%",
               height: "100%",
               svgXML: skin.svg,
               onSVGReady: this.saveRef.bind(this)
             },
-            _react2.default.createElement(_reactSamySvg.SvgProxy, {
+            _react2.default.createElement(_reactSvgmt.SvgProxy, {
               selector: "#knob",
               transform: "$ORIGINAL rotate(" + angle + ", " + skin.knobX + ", " + skin.knobY + ")"
             }),
@@ -6153,8 +6155,10 @@ __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__define__["a" /* default */])(
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* unused harmony export gray */
 /* harmony export (immutable) */ __webpack_exports__["b"] = lab;
 /* unused harmony export Lab */
+/* unused harmony export lch */
 /* harmony export (immutable) */ __webpack_exports__["a"] = hcl;
 /* unused harmony export Hcl */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__define__ = __webpack_require__(21);
@@ -6164,10 +6168,11 @@ __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__define__["a" /* default */])(
 
 
 
-var Kn = 18,
-    Xn = 0.950470, // D65 standard referent
+// https://beta.observablehq.com/@mbostock/lab-and-rgb
+var K = 18,
+    Xn = 0.96422,
     Yn = 1,
-    Zn = 1.088830,
+    Zn = 0.82521,
     t0 = 4 / 29,
     t1 = 6 / 29,
     t2 = 3 * t1 * t1,
@@ -6176,17 +6181,24 @@ var Kn = 18,
 function labConvert(o) {
   if (o instanceof Lab) return new Lab(o.l, o.a, o.b, o.opacity);
   if (o instanceof Hcl) {
+    if (isNaN(o.h)) return new Lab(o.l, 0, 0, o.opacity);
     var h = o.h * __WEBPACK_IMPORTED_MODULE_2__math__["b" /* deg2rad */];
     return new Lab(o.l, Math.cos(h) * o.c, Math.sin(h) * o.c, o.opacity);
   }
   if (!(o instanceof __WEBPACK_IMPORTED_MODULE_1__color__["a" /* Rgb */])) o = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__color__["b" /* rgbConvert */])(o);
-  var b = rgb2xyz(o.r),
-      a = rgb2xyz(o.g),
-      l = rgb2xyz(o.b),
-      x = xyz2lab((0.4124564 * b + 0.3575761 * a + 0.1804375 * l) / Xn),
-      y = xyz2lab((0.2126729 * b + 0.7151522 * a + 0.0721750 * l) / Yn),
-      z = xyz2lab((0.0193339 * b + 0.1191920 * a + 0.9503041 * l) / Zn);
+  var r = rgb2lrgb(o.r),
+      g = rgb2lrgb(o.g),
+      b = rgb2lrgb(o.b),
+      y = xyz2lab((0.2225045 * r + 0.7168786 * g + 0.0606169 * b) / Yn), x, z;
+  if (r === g && g === b) x = z = y; else {
+    x = xyz2lab((0.4360747 * r + 0.3850649 * g + 0.1430804 * b) / Xn);
+    z = xyz2lab((0.0139322 * r + 0.0971045 * g + 0.7141733 * b) / Zn);
+  }
   return new Lab(116 * y - 16, 500 * (x - y), 200 * (y - z), o.opacity);
+}
+
+function gray(l, opacity) {
+  return new Lab(l, 0, 0, opacity == null ? 1 : opacity);
 }
 
 function lab(l, a, b, opacity) {
@@ -6202,22 +6214,22 @@ function Lab(l, a, b, opacity) {
 
 __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__define__["a" /* default */])(Lab, lab, __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__define__["b" /* extend */])(__WEBPACK_IMPORTED_MODULE_1__color__["c" /* Color */], {
   brighter: function(k) {
-    return new Lab(this.l + Kn * (k == null ? 1 : k), this.a, this.b, this.opacity);
+    return new Lab(this.l + K * (k == null ? 1 : k), this.a, this.b, this.opacity);
   },
   darker: function(k) {
-    return new Lab(this.l - Kn * (k == null ? 1 : k), this.a, this.b, this.opacity);
+    return new Lab(this.l - K * (k == null ? 1 : k), this.a, this.b, this.opacity);
   },
   rgb: function() {
     var y = (this.l + 16) / 116,
         x = isNaN(this.a) ? y : y + this.a / 500,
         z = isNaN(this.b) ? y : y - this.b / 200;
-    y = Yn * lab2xyz(y);
     x = Xn * lab2xyz(x);
+    y = Yn * lab2xyz(y);
     z = Zn * lab2xyz(z);
     return new __WEBPACK_IMPORTED_MODULE_1__color__["a" /* Rgb */](
-      xyz2rgb( 3.2404542 * x - 1.5371385 * y - 0.4985314 * z), // D65 -> sRGB
-      xyz2rgb(-0.9692660 * x + 1.8760108 * y + 0.0415560 * z),
-      xyz2rgb( 0.0556434 * x - 0.2040259 * y + 1.0572252 * z),
+      lrgb2rgb( 3.1338561 * x - 1.6168667 * y - 0.4906146 * z),
+      lrgb2rgb(-0.9787684 * x + 1.9161415 * y + 0.0334540 * z),
+      lrgb2rgb( 0.0719453 * x - 0.2289914 * y + 1.4052427 * z),
       this.opacity
     );
   }
@@ -6231,19 +6243,24 @@ function lab2xyz(t) {
   return t > t1 ? t * t * t : t2 * (t - t0);
 }
 
-function xyz2rgb(x) {
+function lrgb2rgb(x) {
   return 255 * (x <= 0.0031308 ? 12.92 * x : 1.055 * Math.pow(x, 1 / 2.4) - 0.055);
 }
 
-function rgb2xyz(x) {
+function rgb2lrgb(x) {
   return (x /= 255) <= 0.04045 ? x / 12.92 : Math.pow((x + 0.055) / 1.055, 2.4);
 }
 
 function hclConvert(o) {
   if (o instanceof Hcl) return new Hcl(o.h, o.c, o.l, o.opacity);
   if (!(o instanceof Lab)) o = labConvert(o);
+  if (o.a === 0 && o.b === 0) return new Hcl(NaN, 0, o.l, o.opacity);
   var h = Math.atan2(o.b, o.a) * __WEBPACK_IMPORTED_MODULE_2__math__["a" /* rad2deg */];
   return new Hcl(h < 0 ? h + 360 : h, Math.sqrt(o.a * o.a + o.b * o.b), o.l, o.opacity);
+}
+
+function lch(l, c, h, opacity) {
+  return arguments.length === 1 ? hclConvert(l) : new Hcl(h, c, l, opacity == null ? 1 : opacity);
 }
 
 function hcl(h, c, l, opacity) {
@@ -6259,10 +6276,10 @@ function Hcl(h, c, l, opacity) {
 
 __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__define__["a" /* default */])(Hcl, hcl, __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__define__["b" /* extend */])(__WEBPACK_IMPORTED_MODULE_1__color__["c" /* Color */], {
   brighter: function(k) {
-    return new Hcl(this.h, this.c, this.l + Kn * (k == null ? 1 : k), this.opacity);
+    return new Hcl(this.h, this.c, this.l + K * (k == null ? 1 : k), this.opacity);
   },
   darker: function(k) {
-    return new Hcl(this.h, this.c, this.l - Kn * (k == null ? 1 : k), this.opacity);
+    return new Hcl(this.h, this.c, this.l - K * (k == null ? 1 : k), this.opacity);
   },
   rgb: function() {
     return labConvert(this).rgb();
@@ -9961,7 +9978,7 @@ module.exports =
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 2);
+/******/ 	return __webpack_require__(__webpack_require__.s = 3);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -9986,23 +10003,43 @@ module.exports = __webpack_require__(204);
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.Samy = exports.SvgProxy = undefined;
 
-var _Samy = __webpack_require__(3);
+var _react = __webpack_require__(0);
 
-var _Samy2 = _interopRequireDefault(_Samy);
-
-var _SvgProxy = __webpack_require__(8);
-
-var _SvgProxy2 = _interopRequireDefault(_SvgProxy);
+var _react2 = _interopRequireDefault(_react);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-exports.SvgProxy = _SvgProxy2.default;
-exports.Samy = _Samy2.default;
+var SVGContext = _react2.default.createContext(null);
+exports.default = SVGContext;
 
 /***/ }),
 /* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.SvgLoader = exports.SvgProxy = undefined;
+
+var _svgLoader = __webpack_require__(4);
+
+var _svgLoader2 = _interopRequireDefault(_svgLoader);
+
+var _svgProxy = __webpack_require__(8);
+
+var _svgProxy2 = _interopRequireDefault(_svgProxy);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.SvgProxy = _svgProxy2.default;
+exports.SvgLoader = _svgLoader2.default;
+
+/***/ }),
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10024,9 +10061,13 @@ var _propTypes = __webpack_require__(1);
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
-var _SVGLoader = __webpack_require__(4);
+var _reactSvg = __webpack_require__(5);
 
-var _SVGLoader2 = _interopRequireDefault(_SVGLoader);
+var _reactSvg2 = _interopRequireDefault(_reactSvg);
+
+var _svgContext = __webpack_require__(2);
+
+var _svgContext2 = _interopRequireDefault(_svgContext);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -10038,92 +10079,94 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var Samy = function (_React$Component) {
-  _inherits(Samy, _React$Component);
+function noop() {}
 
-  function Samy(props) {
-    _classCallCheck(this, Samy);
+var SvgLoader = function (_React$Component) {
+  _inherits(SvgLoader, _React$Component);
 
-    var _this = _possibleConstructorReturn(this, (Samy.__proto__ || Object.getPrototypeOf(Samy)).call(this, props));
+  function SvgLoader(props) {
+    _classCallCheck(this, SvgLoader);
+
+    var _this = _possibleConstructorReturn(this, (SvgLoader.__proto__ || Object.getPrototypeOf(SvgLoader)).call(this, props));
 
     _this.mounted = false;
     _this.state = {
-      svg: null
+      svg: null,
+      svgCount: 0 // used to re apply updates when path change
     };
 
-    _this.onSVGReady = _this.onSVGReady.bind(_this);
     if (_react2.default.Fragment == null) {
       throw new Error("This version of React doesn't support Fragments, please update it");
     }
+
+    _this.onSVGReady = _this.onSVGReady.bind(_this);
     return _this;
   }
 
-  _createClass(Samy, [{
-    key: "getChildContext",
-    value: function getChildContext() {
-      return {
-        svg: this.state.svg
-      };
-    }
-  }, {
-    key: "componentDidMount",
+  _createClass(SvgLoader, [{
+    key: 'componentDidMount',
     value: function componentDidMount() {
       this.mounted = true;
     }
   }, {
-    key: "componentWillUnmount",
+    key: 'componentWillUnmount',
     value: function componentWillUnmount() {
       this.mounted = false;
     }
   }, {
-    key: "onSVGReady",
+    key: 'onSVGReady',
     value: function onSVGReady(svgNode) {
       var _this2 = this;
 
       // Run after component has mounted
       setTimeout(function () {
         if (_this2.mounted) {
-          _this2.setState(_extends({}, _this2.state, { svg: svgNode }));
+          _this2.setState(_extends({}, _this2.state, {
+            svg: svgNode,
+            svgCount: _this2.state.svgCount + 1
+          }));
           _this2.props.onSVGReady(svgNode);
         }
       }, 0);
     }
   }, {
-    key: "render",
+    key: 'render',
     value: function render() {
       var _props = this.props,
           path = _props.path,
           onSVGReady = _props.onSVGReady,
           children = _props.children,
           svgXML = _props.svgXML,
-          props = _objectWithoutProperties(_props, ["path", "onSVGReady", "children", "svgXML"]);
+          rest = _objectWithoutProperties(_props, ['path', 'onSVGReady', 'children', 'svgXML']);
 
       var renderProxies = this.state.svg != null;
       var proxies = renderProxies ? this.props.children : null;
       return _react2.default.createElement(
         _react2.default.Fragment,
         null,
-        _react2.default.createElement(_SVGLoader2.default, _extends({
-          path: this.props.path,
-          onSVGReady: this.onSVGReady,
+        _react2.default.createElement(_reactSvg2.default, _extends({
+          path: path,
+          callback: this.onSVGReady,
           svgXML: svgXML
-        }, props)),
-        proxies
+        }, rest)),
+        _react2.default.createElement(
+          _svgContext2.default.Provider,
+          {
+            value: { path: path, svgCount: this.state.svgCount, svg: this.state.svg }
+          },
+          proxies
+        )
       );
     }
   }]);
 
-  return Samy;
+  return SvgLoader;
 }(_react2.default.Component);
 
-exports.default = Samy;
+exports.default = SvgLoader;
 
 
-Samy.childContextTypes = {
-  svg: _propTypes2.default.object
-};
-
-Samy.propTypes = {
+SvgLoader.propTypes = {
   path: _propTypes2.default.string,
   svgXML: _propTypes2.default.string,
   onSVGReady: _propTypes2.default.func,
@@ -10131,70 +10174,12 @@ Samy.propTypes = {
   children: _propTypes2.default.any // eslint-disable-line
 };
 
-Samy.defaultProps = {
+SvgLoader.defaultProps = {
   path: null,
   svgXML: null,
-  onSVGReady: function onSVGReady() {},
+  onSVGReady: noop,
   style: null
 };
-
-/***/ }),
-/* 4 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _react = __webpack_require__(0);
-
-var _react2 = _interopRequireDefault(_react);
-
-var _propTypes = __webpack_require__(1);
-
-var _propTypes2 = _interopRequireDefault(_propTypes);
-
-var _reactSvg = __webpack_require__(5);
-
-var _reactSvg2 = _interopRequireDefault(_reactSvg);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
-
-function noop() {}
-
-var SVGLoader = function SVGLoader(props) {
-  var path = props.path,
-      onSVGReady = props.onSVGReady,
-      svgXML = props.svgXML,
-      rest = _objectWithoutProperties(props, ["path", "onSVGReady", "svgXML"]);
-
-  return _react2.default.createElement(_reactSvg2.default, _extends({
-    path: path,
-    callback: onSVGReady || noop,
-    svgXML: svgXML
-  }, rest));
-};
-
-SVGLoader.propTypes = {
-  path: _propTypes2.default.string,
-  onSVGReady: _propTypes2.default.func,
-  svgXML: _propTypes2.default.string
-};
-
-SVGLoader.defaultProps = {
-  path: null,
-  onSVGReady: noop,
-  svgXML: null
-};
-
-exports.default = SVGLoader;
 
 /***/ }),
 /* 5 */
@@ -10271,10 +10256,16 @@ var ReactSVG = function (_React$Component) {
   }
 
   _createClass(ReactSVG, [{
-    key: 'componentWillReceiveProps',
-    value: function componentWillReceiveProps(nextProps) {
-      if (this.props.path !== nextProps.path || this.props.svgXML !== nextProps.svgXML) {
-        this.renderSVG(nextProps);
+    key: 'componentDidUpdate',
+    value: function componentDidUpdate(prevProps) {
+      if (this.props.path !== prevProps.path || this.props.svgXML !== prevProps.svgXML) {
+        if (this.container) {
+          // destroy children
+          this.container.innerHTML = '';
+        }
+        // the svg src attribute is already updated with the new path
+        // this will be used by svg injector to fetch the new svg
+        this.renderSVG(this.props);
       }
     }
   }, {
@@ -10302,7 +10293,7 @@ var ReactSVG = function (_React$Component) {
           className = props.className,
           htmlProps = _objectWithoutProperties(props, ['callback', 'path', 'svgXML', 'className']);
 
-      // Update SVG element 
+      // Update SVG element
 
       SVGInjector(svgNode, {
         each: function each(err) {
@@ -10382,15 +10373,15 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
  */
 
 (function (window, document) {
-  "use strict";
+  'use strict';
 
   // Environment
 
-  var isLocal = window.location.protocol === "file:";
-  var hasSvgSupport = document.implementation.hasFeature("http://www.w3.org/TR/SVG11/feature#BasicStructure", "1.1");
+  var isLocal = window.location.protocol === 'file:';
+  var hasSvgSupport = document.implementation.hasFeature('http://www.w3.org/TR/SVG11/feature#BasicStructure', '1.1');
 
   function uniqueClasses(list) {
-    list = list.split(" ");
+    list = list.split(' ');
 
     var hash = {};
     var i = list.length;
@@ -10403,7 +10394,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
       }
     }
 
-    return out.join(" ");
+    return out.join(' ');
   }
 
   /**
@@ -10411,7 +10402,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
    * source: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach
    */
   var forEach = Array.prototype.forEach || function (fn, scope) {
-    if (this === void 0 || this === null || typeof fn !== "function") {
+    if (this === void 0 || this === null || typeof fn !== 'function') {
       throw new TypeError();
     }
 
@@ -10472,7 +10463,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
       }
     } else {
       if (!window.XMLHttpRequest) {
-        callback("Browser does not support XMLHttpRequest");
+        callback('Browser does not support XMLHttpRequest');
         return false;
       }
 
@@ -10487,9 +10478,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         if (httpRequest.readyState === 4) {
           // Handle status
           if (httpRequest.status === 404 || httpRequest.responseXML === null) {
-            callback("Unable to load SVG file: " + url);
+            callback('Unable to load SVG file: ' + url);
 
-            if (isLocal) callback("Note: SVG injection ajax calls do not work locally without adjusting security setting in your browser. Or consider using a local webserver.");
+            if (isLocal) callback('Note: SVG injection ajax calls do not work locally without adjusting security setting in your browser. Or consider using a local webserver.');
 
             callback();
             return false;
@@ -10514,13 +10505,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
               var xmlDoc;
               try {
                 var parser = new DOMParser();
-                xmlDoc = parser.parseFromString(httpRequest.responseText, "text/xml");
+                xmlDoc = parser.parseFromString(httpRequest.responseText, 'text/xml');
               } catch (e) {
                 xmlDoc = undefined;
               }
 
-              if (!xmlDoc || xmlDoc.getElementsByTagName("parsererror").length) {
-                callback("Unable to parse SVG file: " + url);
+              if (!xmlDoc || xmlDoc.getElementsByTagName('parsererror').length) {
+                callback('Unable to parse SVG file: ' + url);
                 return false;
               } else {
                 // Cache it
@@ -10531,17 +10522,17 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             // We've loaded a new asset, so process any requests waiting for it
             processRequestQueue(url);
           } else {
-            callback("There was a problem injecting the SVG: " + httpRequest.status + " " + httpRequest.statusText);
+            callback('There was a problem injecting the SVG: ' + httpRequest.status + ' ' + httpRequest.statusText);
             return false;
           }
         }
       };
 
-      httpRequest.open("GET", url);
+      httpRequest.open('GET', url);
 
       // Treat and parse the response as XML, even if the
       // server sends us a different mimetype
-      if (httpRequest.overrideMimeType) httpRequest.overrideMimeType("text/xml");
+      if (httpRequest.overrideMimeType) httpRequest.overrideMimeType('text/xml');
 
       httpRequest.send();
     }
@@ -10554,27 +10545,27 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
    * @param {Node} svg Loaded SVG element
    */
   var processSvg = function processSvg(el, svg) {
-    if (typeof svg === "undefined" || typeof svg === "string") {
+    if (typeof svg === 'undefined' || typeof svg === 'string') {
       return false;
     }
 
-    var imgId = el.getAttribute("id");
+    var imgId = el.getAttribute('id');
     if (imgId) {
-      svg.setAttribute("id", imgId);
+      svg.setAttribute('id', imgId);
     }
 
-    var imgTitle = el.getAttribute("title");
+    var imgTitle = el.getAttribute('title');
     if (imgTitle) {
-      svg.setAttribute("title", imgTitle);
+      svg.setAttribute('title', imgTitle);
     }
 
     // Concat the SVG classes + 'injected-svg' + the img classes
-    var classMerge = [].concat(svg.getAttribute("class") || [], "injected-svg", el.getAttribute("class") || []).join(" ");
-    svg.setAttribute("class", uniqueClasses(classMerge));
+    var classMerge = [].concat(svg.getAttribute('class') || [], 'injected-svg', el.getAttribute('class') || []).join(' ');
+    svg.setAttribute('class', uniqueClasses(classMerge));
 
-    var imgStyle = el.getAttribute("style");
+    var imgStyle = el.getAttribute('style');
     if (imgStyle) {
-      svg.setAttribute("style", imgStyle);
+      svg.setAttribute('style', imgStyle);
     }
 
     // Copy all the data elements to the svg
@@ -10602,15 +10593,15 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     // Handle all defs elements that have iri capable attributes as defined by w3c: http://www.w3.org/TR/SVG/linking.html#processingIRI
     // Mapping IRI addressable elements to the properties that can reference them:
     var iriElementsAndProperties = {
-      clipPath: ["clip-path"],
-      "color-profile": ["color-profile"],
-      cursor: ["cursor"],
-      filter: ["filter"],
-      linearGradient: ["fill", "stroke"],
-      marker: ["marker", "marker-start", "marker-mid", "marker-end"],
-      mask: ["mask"],
-      pattern: ["fill", "stroke"],
-      radialGradient: ["fill", "stroke"]
+      clipPath: ['clip-path'],
+      'color-profile': ['color-profile'],
+      cursor: ['cursor'],
+      filter: ['filter'],
+      linearGradient: ['fill', 'stroke'],
+      marker: ['marker', 'marker-start', 'marker-mid', 'marker-end'],
+      mask: ['mask'],
+      pattern: ['fill', 'stroke'],
+      radialGradient: ['fill', 'stroke']
     };
 
     var element, elementDefs, properties, currentId, newId;
@@ -10618,18 +10609,18 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
       element = key;
       properties = iriElementsAndProperties[key];
 
-      elementDefs = svg.querySelectorAll("defs " + element + "[id]");
+      elementDefs = svg.querySelectorAll('defs ' + element + '[id]');
       for (var i = 0, elementsLen = elementDefs.length; i < elementsLen; i++) {
         currentId = elementDefs[i].id;
-        newId = currentId + "-" + injectCount;
+        newId = currentId + '-' + injectCount;
 
         // All of the properties that can reference this element type
         var referencingElements;
         forEach.call(properties, function (property) {
           // :NOTE: using a substring match attr selector here to deal with IE "adding extra quotes in url() attrs"
-          referencingElements = svg.querySelectorAll("[" + property + '*="' + currentId + '"]');
+          referencingElements = svg.querySelectorAll('[' + property + '*="' + currentId + '"]');
           for (var j = 0, referencingElementLen = referencingElements.length; j < referencingElementLen; j++) {
-            referencingElements[j].setAttribute(property, "url(#" + newId + ")");
+            referencingElements[j].setAttribute(property, 'url(#' + newId + ')');
           }
         });
 
@@ -10638,16 +10629,16 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     });
 
     // Remove any unwanted/invalid namespaces that might have been added by SVG editing tools
-    svg.removeAttribute("xmlns:a");
+    svg.removeAttribute('xmlns:a');
 
     // :WORKAROUND:
     // IE doesn't evaluate <style> tags in SVGs that are dynamically added to the page.
     // This trick will trigger IE to read and use any existing SVG <style> tags.
     //
     // Reference: https://github.com/iconic/SVGInjector/issues/23
-    var styleTags = svg.querySelectorAll("style");
+    var styleTags = svg.querySelectorAll('style');
     forEach.call(styleTags, function (styleTag) {
-      styleTag.textContent += "";
+      styleTag.textContent += '';
     });
 
     //--- Update for react-samy-svg ----//
@@ -10658,9 +10649,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     //copy original svg attributes to node
     if (svg.hasAttributes()) {
       var attrs = svg.attributes;
-      var output = "";
+      var output = '';
       for (var i = attrs.length - 1; i >= 0; i--) {
-        output += attrs[i].name + "->" + attrs[i].value;
+        output += attrs[i].name + '->' + attrs[i].value;
         el.setAttribute(attrs[i].name, attrs[i].value);
       }
     }
@@ -10683,13 +10674,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
       var xmlDoc;
       try {
         var parser = new DOMParser();
-        xmlDoc = parser.parseFromString(svgXML, "text/xml");
+        xmlDoc = parser.parseFromString(svgXML, 'text/xml');
       } catch (e) {
         xmlDoc = undefined;
       }
 
-      if (!xmlDoc || xmlDoc.getElementsByTagName("parsererror").length) {
-        callback("Unable to parse SVG file: " + xmlDoc.getElementsByTagName("parsererror")[0].innerHTML);
+      if (!xmlDoc || xmlDoc.getElementsByTagName('parsererror').length) {
+        callback('Unable to parse SVG file: ' + xmlDoc.getElementsByTagName('parsererror')[0].innerHTML);
         return false;
       } else {
         // Cache it
@@ -10699,16 +10690,16 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
       }
     } else {
       // Grab the src or data-src attribute
-      var imgUrl = el.getAttribute("data-src") || el.getAttribute("src");
+      var imgUrl = el.getAttribute('data-src') || el.getAttribute('src');
 
       // We can only inject SVG
       if (!/\.svg/i.test(imgUrl)) {
-        callback("Attempted to inject a file with a non-svg extension: " + imgUrl);
+        callback('Attempted to inject a file with a non-svg extension: ' + imgUrl);
         return;
       }
 
       //avoid loading the asset
-      el.setAttribute("src", "");
+      el.setAttribute('src', '');
       // Make sure we aren't already in the process of injecting this element to
       // avoid a race condition if multiple injections for the same element are run.
       // :NOTE: Using indexOf() only _after_ we check for SVG support and bail,
@@ -10761,14 +10752,14 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
       var elementsLoaded = 0;
       forEach.call(elements, function (element) {
         injectElement(element, pngFallback, svgXML, function () {
-          if (eachCallback && typeof eachCallback === "function") eachCallback();
+          if (eachCallback && typeof eachCallback === 'function') eachCallback();
           if (done && elements.length === ++elementsLoaded) done(elementsLoaded);
         });
       });
     } else {
       if (elements) {
         injectElement(elements, pngFallback, svgXML, function () {
-          if (eachCallback && typeof eachCallback === "function") eachCallback();
+          if (eachCallback && typeof eachCallback === 'function') eachCallback();
           if (done) done(1);
           elements = null;
         });
@@ -10780,7 +10771,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
   /* global module, exports: true, define */
   // Node.js or CommonJS
-  if (( false ? "undefined" : _typeof(module)) === "object" && _typeof(module.exports) === "object") {
+  if (( false ? 'undefined' : _typeof(module)) === 'object' && _typeof(module.exports) === 'object') {
     module.exports = exports = SVGInjector;
   } else if (true) {
     // AMD support
@@ -10788,7 +10779,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
       return SVGInjector;
     }).call(exports, __webpack_require__, exports, module),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-  } else if ((typeof window === "undefined" ? "undefined" : _typeof(window)) === "object") {
+  } else if ((typeof window === 'undefined' ? 'undefined' : _typeof(window)) === 'object') {
     // Otherwise, attach to window as global
     window.SVGInjector = SVGInjector;
   }
@@ -10845,6 +10836,10 @@ var _propTypes = __webpack_require__(1);
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
+var _svgContext = __webpack_require__(2);
+
+var _svgContext2 = _interopRequireDefault(_svgContext);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -10853,95 +10848,120 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+var hasNamespaceRegexp = /(\w+)_(\S+)/;
+var supportedNamespaces = {
+  xlink: 'http://www.w3.org/1999/xlink'
+};
+
 /*
  * SvgProxy works as a virtual svg node.
  * @selector: The css selector of the element
  * @onElementSelected: callback in case the svg node is needed
  * @children : string supported (for text elements
  */
+
 var SvgProxy = function (_React$Component) {
   _inherits(SvgProxy, _React$Component);
 
   function SvgProxy(props) {
     _classCallCheck(this, SvgProxy);
 
+    // DOM references to the selected nodes
     var _this = _possibleConstructorReturn(this, (SvgProxy.__proto__ || Object.getPrototypeOf(SvgProxy)).call(this, props));
 
-    _this.state = {
-      elemRefs: []
-    };
-
+    _this.elemRefs = [];
+    _this.svgRef = null;
+    _this.path = null;
     _this.originalValues = {};
+    _this.onSvgUpdated = _this.onSvgUpdated.bind(_this);
+    _this.updateSvgElements = _this.updateSvgElements.bind(_this);
     return _this;
   }
 
   _createClass(SvgProxy, [{
-    key: "componentDidMount",
+    key: 'componentDidMount',
     value: function componentDidMount() {
-      /* 
-       Note: The parent component <Samy>
-       only renders children when the svg has been loaded
-       so we know we have it in context
-      */
-      this.updateSvgElements(this.props, this.context);
+      this.updateSvgElements(this.props);
     }
   }, {
-    key: "componentWillReceiveProps",
-    value: function componentWillReceiveProps(nextProps, nextContext) {
+    key: 'componentWillReceiveProps',
+    value: function componentWillReceiveProps(nextProps) {
       // If a prop has changed then update the element
-      this.updateSvgElements(nextProps, nextContext);
+      this.updateSvgElements(nextProps);
     }
   }, {
-    key: "updateSvgElements",
-    value: function updateSvgElements(nextProps, nextContext) {
-      var elemRefs = this.state.elemRefs;
+    key: 'onSvgUpdated',
+    value: function onSvgUpdated() {
+      // force to reapply updates
+      this.updateSvgElements(this.props, true);
+    }
+  }, {
+    key: 'updateSvgElements',
+    value: function updateSvgElements(nextProps, force) {
+      var svgRef = this.svgRef;
 
 
-      if (nextContext.svg && elemRefs.length === 0) {
+      if (svgRef && (this.elemRefs.length === 0 || force)) {
         // We don't have the svg element reference.
 
-        var nodes = Array.from(nextContext.svg.querySelectorAll(this.props.selector));
-        if (nodes.length === 0 && ["svg", "root"].includes(this.props.selector)) {
+        var nodes = Array.from(svgRef.querySelectorAll(this.props.selector));
+        if (nodes.length === 0 && ['svg', 'root'].includes(this.props.selector)) {
           // If the selector equls 'svg' or 'root' use the svg node
-          nodes.push(nextContext.svg);
+          nodes.push(svgRef);
         }
         // Call the onElementSelected callback with the element (or array)
         if (this.props.onElementSelected && nodes.length) {
           this.props.onElementSelected(nodes.length === 1 ? nodes[0] : nodes);
         }
 
-        elemRefs = nodes;
-        this.setState({ elemRefs: nodes });
+        this.elemRefs = nodes;
       }
 
-      if (elemRefs) {
+      if (this.elemRefs) {
         var propkeys = Object.keys(nextProps);
         for (var i = 0; i < propkeys.length; i += 1) {
           var propName = propkeys[i];
           // Ignore component props
-          var ownprop = ["selector", "onElementSelected"].includes(propName);
+          var ownprop = ['selector', 'onElementSelected'].includes(propName);
           if (!ownprop) {
+            var nsPrefix = null;
+            var nsValue = null;
+            var attrNameWithoutPrefix = propName;
+            var attrNamePrefixed = null;
+            // TODO: check performance implications (for animations) of testing everytime
+            var r = hasNamespaceRegexp.exec(propName);
+            if (r && r[1]) {
+              // eslint-disable-next-line
+              nsPrefix = r[1];
+              nsValue = supportedNamespaces[nsPrefix];
+              // eslint-disable-next-line
+              attrNameWithoutPrefix = r[2];
+              attrNamePrefixed = nsPrefix + ':' + attrNameWithoutPrefix;
+            } else {
+              attrNamePrefixed = propName;
+            }
             // Apply attributes to node
-            for (var elemix = 0; elemix < elemRefs.length; elemix += 1) {
-              var elem = elemRefs[elemix];
-              if (typeof nextProps[propName] === "function") {
+            for (var elemix = 0; elemix < this.elemRefs.length; elemix += 1) {
+              var elem = this.elemRefs[elemix];
+              if (typeof nextProps[propName] === 'function') {
                 elem[propName.toLowerCase()] = nextProps[propName];
               } else {
                 // Discard non string props
                 // TODO: Support style conversion
-                if (typeof nextProps[propName] !== "string") {
+                if (typeof nextProps[propName] !== 'string') {
                   return;
                 }
+
                 // Save originalValue
                 if (this.originalValues[propName] == null) {
-                  this.originalValues[propName] = elem.getAttributeNS(null, propName) || "";
+                  this.originalValues[propName] = elem.getAttributeNS(nsValue, attrNamePrefixed) || '';
                 }
                 // TODO: Optimization, avoid using replace everytime
-                var attrValue = nextProps[propName].replace("$ORIGINAL", this.originalValues[propName]);
+                var attrValue = nextProps[propName].replace('$ORIGINAL', this.originalValues[propName]);
                 // https://developer.mozilla.org/en/docs/Web/SVG/Namespaces_Crash_Course
-                elem.setAttributeNS(null, propName, attrValue);
+                elem.setAttributeNS(nsValue, attrNamePrefixed, attrValue);
                 // Set inner text
-                if (typeof nextProps.children === "string" && nextProps.children.trim().length) {
+                if (typeof nextProps.children === 'string' && nextProps.children.trim().length) {
                   elem.textContent = nextProps.children;
                 }
               }
@@ -10951,9 +10971,30 @@ var SvgProxy = function (_React$Component) {
       }
     }
   }, {
-    key: "render",
+    key: 'render',
     value: function render() {
-      return null;
+      var _this2 = this;
+
+      return _react2.default.createElement(
+        _svgContext2.default.Consumer,
+        null,
+        function (obj) {
+          var path = obj.path,
+              svg = obj.svg,
+              svgCount = obj.svgCount;
+
+          if (_this2.svgCount && _this2.svgCount !== svgCount) {
+            // The svg was injected again
+            // this happens when the path changed
+            // ( when svgCount changes the new svg was injected )
+            _this2.onSvgUpdated();
+          } else {
+            _this2.svgRef = svg;
+            _this2.path = path;
+            _this2.svgCount = svgCount;
+          }
+        }
+      );
     }
   }]);
 
@@ -10966,10 +11007,6 @@ exports.default = SvgProxy;
 SvgProxy.propTypes = {
   selector: _propTypes2.default.string.isRequired,
   onElementSelected: _propTypes2.default.func
-};
-
-SvgProxy.contextTypes = {
-  svg: _propTypes2.default.object
 };
 
 SvgProxy.defaultProps = {

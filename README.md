@@ -15,6 +15,9 @@
 - Support arrow keys.
 - **Supports custom skins**
 
+<a href="https://github.com/hugozap/svgmt"> <img src="builtwith-svgmt.png"> </a>
+
+
 ## Precision mode
 
 ![precision mode](http://hugozap.github.io/react-rotary-knob/img/knob-basic2.gif)
@@ -89,3 +92,5 @@ See defaultSkin.js for an example.
 - [Custom skin pack](https://github.com/hugozap/react-rotary-knob-skin-pack)
 
 - [Custom skins demo (uses flubber to morph paths)](https://hugozap.github.io/react-rotary-knob-custom-skins-demo/)
+
+

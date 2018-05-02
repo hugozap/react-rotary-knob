@@ -3,7 +3,7 @@
 import React from 'react';
 import Enzyme,{shallow, mount} from 'enzyme';
 import {Knob} from '../src/index';
-import Adapter from 'enzyme-adapter-react-16';
+import Adapter from './ReactSixteenAdapter';
 import textskin from '../textskin';
 
 Enzyme.configure({ adapter: new Adapter() });

@@ -7,7 +7,7 @@
 
 import React, { Component } from "react";
 import utils from "./utils";
-import { Samy, SvgProxy } from "react-samy-svg";
+import { SvgLoader, SvgProxy } from "react-svgmt";
 import defaultSkin from "./knobdefaultskin";
 import { KnobVisualHelpers } from "./helpers/KnobVisualHelpers";
 import InternalInput from "./InternalInput";
@@ -384,7 +384,7 @@ class Knob extends Component<KnobProps, KnobState> {
             onChange={this.onFormControlChange.bind(this)}
           />
 
-          <Samy
+          <SvgLoader
             width="100%"
             height="100%"
             svgXML={skin.svg}
@@ -397,7 +397,7 @@ class Knob extends Component<KnobProps, KnobState> {
               })`}
             />
             {skinElemUpdates}
-          </Samy>
+          </SvgLoader>
         </div>
         {this.state.svgRef && (
           <RotateView svg={this.state.svgRef} angle={angle} />
