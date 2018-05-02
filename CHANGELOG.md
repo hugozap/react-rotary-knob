@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 1.1.0
+
+- Change react-samy-svg to react-svgmt
+- fix enzyme tests (broke because of new context api)
+- update react dependency to 16.3.0
+
 ## 1.0.13
 
 - samy dependency updated
