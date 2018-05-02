@@ -1,6 +1,6 @@
 {
   "name": "react-rotary-knob",
-  "version": "1.0.13",
+  "version": "1.1.0",
   "description": "Skinnable Rotary Knob for React",
   "main": "build/commonjs/index.js",
   "repository": {
@@ -43,7 +43,9 @@
   },
   "jest": {
     "verbose": true,
-    "testMatch": ["**/__tests__/**/*-tests.js"]
+    "testMatch": [
+      "**/__tests__/**/*-tests.js"
+    ]
   },
   "devDependencies": {
     "@storybook/react": "^3.3.8",
