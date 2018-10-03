@@ -53,6 +53,8 @@ type KnobProps = {
   skin: Skin,
   format: (val: number) => string,
   onChange: (val: number) => void,
+  onStart: () => void,
+  onEnd: () => void,
   style: any,
   preciseMode: boolean,
   unlockDistance: number,
@@ -100,6 +102,7 @@ class Knob extends Component<KnobProps, KnobState> {
     min: 0,
     max: 100,
     onChange: function() {},
+    onEnd: function () {},
     skin: defaultSkin,
     format: (val: number) => {
       return val.toFixed(0);
@@ -190,6 +193,7 @@ class Knob extends Component<KnobProps, KnobState> {
       const initialAngle = self.scale(value);
       vbox = elem.node().getBoundingClientRect();
       elem.classed("dragging", true);
+      self.props.onStart();
       event.on("drag", dragged).on("end", ended);
       //startPos = position relative to the box center
       //Note: the d3 event container is the same element, so coordinates
@@ -273,6 +277,7 @@ class Knob extends Component<KnobProps, KnobState> {
       function ended() {
         elem.classed("dragging", false);
         self.setState({ ...self.state, dragging: false });
+        self.props.onEnd();
 
         //focus input so it can be moved with arrows
         self.inputRef.focus();
@@ -312,6 +317,8 @@ class Knob extends Component<KnobProps, KnobState> {
       min,
       max,
       onChange,
+      onStart,
+      onEnd,
       skin,
       style,
       format,
