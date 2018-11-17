@@ -102,6 +102,7 @@ class Knob extends Component<KnobProps, KnobState> {
     min: 0,
     max: 100,
     onChange: function() {},
+    onStart:function() {},
     onEnd: function () {},
     skin: defaultSkin,
     format: (val: number) => {

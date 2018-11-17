@@ -5447,6 +5447,7 @@ Knob.defaultProps = {
   min: 0,
   max: 100,
   onChange: function onChange() {},
+  onStart: function onStart() {},
   onEnd: function onEnd() {},
   skin: _knobdefaultskin2.default,
   format: function format(val) {
