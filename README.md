@@ -83,6 +83,9 @@ Props:
 | unlockDistance | Minimun drag distance required to unlock the knob | 100 |
 | step | the step distance (when using the keyboard arrows) | 1 |
 | skin | Skin object| |
+| onStart | Called when the dragging starts |
+| onEnd | Called when the dragging ends |
+
 
 
 ### Custom skins
