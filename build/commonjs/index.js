@@ -4967,6 +4967,10 @@ var _react = __webpack_require__(4);
 
 var _react2 = _interopRequireDefault(_react);
 
+var _reactDom = __webpack_require__(209);
+
+var _reactDom2 = _interopRequireDefault(_reactDom);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
@@ -5010,11 +5014,11 @@ var HelpersOverlay = function (_React$Component) {
           overlayStyle = _props.overlayStyle,
           rest = _objectWithoutProperties(_props, ["overlayStyle"]);
 
-      return _react2.default.createElement(
+      return _reactDom2.default.createPortal(_react2.default.createElement(
         "div",
         _extends({ style: styles.overlay }, rest),
         this.props.children
-      );
+      ), document.body);
     }
   }]);
 
@@ -11176,6 +11180,12 @@ function v4(options, buf, offset) {
 
 module.exports = v4;
 
+
+/***/ }),
+/* 209 */
+/***/ (function(module, exports) {
+
+module.exports = require("react-dom");
 
 /***/ })
 /******/ ]);

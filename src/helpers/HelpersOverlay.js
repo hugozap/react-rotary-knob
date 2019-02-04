@@ -1,6 +1,7 @@
 
 // @flow
 import React, { Component } from "react";
+import ReactDOM from 'react-dom';
 
 type HelpersOverlayProps = {
   overlayStyle: ?any
@@ -29,7 +30,8 @@ class HelpersOverlay extends React.Component<HelpersOverlayProps> {
 
       const {overlayStyle, ...rest} = this.props
   
-      return <div style={styles.overlay} {...rest}>{this.props.children}</div>;
+      return ReactDOM.createPortal(<div style={styles.overlay} {...rest}>
+        {this.props.children}</div>, document.body);
     }
   }
 
