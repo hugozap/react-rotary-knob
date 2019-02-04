@@ -68,6 +68,13 @@ class App extends React.Component {
   }
 }
 ```
+### Non-endless behavior
+
+For some applications it's not a good idea to jump from min to max values.
+If you need to limit the rotation take a look at this implementation of a limited knob
+
+https://codesandbox.io/s/qvyyyvv346
+
 
 ### Api
 
