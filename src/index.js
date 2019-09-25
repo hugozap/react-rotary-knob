@@ -324,6 +324,8 @@ class Knob extends Component<KnobProps, KnobState> {
       defaultValue,
       min,
       max,
+      clampMax,
+      clampMin,
       onChange,
       onStart,
       onEnd,
