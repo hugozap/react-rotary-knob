@@ -61,22 +61,24 @@ stories.add("Basic", () => {
     return (
       <div>
         
-        <h2>{this.state.value.toFixed(2)} </h2>
+        <h2>{this.state.value.toFixed(2)} </h2> 
 
         <Knob
-          style={{
-            width: "80px",
-            marginTop: "8rem",
-            marginLeft: "8rem",
-            height: "80px",
-            display: "inline-block"
-          }}
-          onChange={val => {
-            this.changeValue(val);
-          }}
-          min={0}
-          max={100}
-          value={this.state.value}
+        
+        skin={textskin}
+        
+        style={{
+          width: "80px",
+          marginTop: "8rem",
+          height: "80px",
+          display: "inline-block"
+        }}
+        onChange={val => {
+          this.changeValue(val);
+        }}
+        min={0}
+        max={100}
+        value={this.state.value}
         />
       </div>
     );
@@ -206,6 +208,32 @@ stories.add("Step = 0.1", () => {
         min={0}
         max={1}
         step={0.1}
+      />
+    </div>
+  );
+});
+
+
+stories.add("ClampMax and ClampMin", () => {
+  return (
+    <div>
+      <p>
+        change clampMax and clampMin props to degree values to limit the range of the knob (e.g. clampMin = 20, clampMax = 340 will give a 40 degree gap between max and min)
+      </p>
+      <Knob
+      
+      skin={textskin}
+        
+        style={{
+          width: "80px",
+          marginTop: "8rem",
+          height: "80px",
+          display: "inline-block"
+        }}
+        min={0}
+        max={1}
+        clampMax={300}
+        clampMin={60}
       />
     </div>
   );

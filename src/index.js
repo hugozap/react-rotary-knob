@@ -48,6 +48,8 @@ type Skin = {
 type KnobProps = {
   value: ?number,
   defaultValue: ?number,
+  clampMin: ?number,
+  clampMax: ?Number,
   min: number,
   max: number,
   skin: Skin,
@@ -101,6 +103,8 @@ class Knob extends Component<KnobProps, KnobState> {
   static defaultProps = {
     min: 0,
     max: 100,
+    clampMax: 360,
+    clampMin: 0,
     onChange: function() {},
     onStart:function() {},
     onEnd: function () {},
@@ -113,6 +117,7 @@ class Knob extends Component<KnobProps, KnobState> {
     defaultValue: 0,
     step: 1
   };
+
   componentDidMount() {
     if (this.props.value == null) {
       /**
@@ -142,7 +147,8 @@ class Knob extends Component<KnobProps, KnobState> {
     if (pmin != nmin || pmax != nmax) {
       this.scale = scaleLinear()
         .domain([nmin, nmax])
-        .range([0, 359]);
+        .range([this.props.clampMax, this.props.clampMin]);
+        this.scale.clamp(true);
     }
   }
 
@@ -202,7 +208,7 @@ class Knob extends Component<KnobProps, KnobState> {
       let startPos = { x: event.x - cx, y: event.y - cy };
       let startAngle = utils.getAngleForPoint(startPos.x, startPos.y);
       let lastPos = startPos;
-      let lastAngle = utils.getAngleForPoint(lastPos.x, lastPos.y);
+      //let lastAngle = utils.getAngleForPoint(lastPos.x, lastPos.y);
       //in precise mode, we won't monitor angle change unless the distance > unlockDistance
       let monitoring = false;
       self.setState({
@@ -239,7 +245,6 @@ class Knob extends Component<KnobProps, KnobState> {
 
         lastPos = currentPos;
         let finalAngle = initialAngle + deltaAngle;
-
         if (finalAngle < 0) {
           //E.g -1 turns 359
           finalAngle += 360;
@@ -297,7 +302,9 @@ class Knob extends Component<KnobProps, KnobState> {
   componentWillMount() {
     this.scale = scaleLinear()
       .domain([this.props.min, this.props.max])
-      .range([0, 360]);
+      .range([this.props.clampMax, this.props.clampMin]);
+      
+      this.scale.clamp(true);
   }
 
   onFormControlChange(newVal: number) {
