@@ -239,6 +239,60 @@ stories.add("ClampMax and ClampMin", () => {
   );
 });
 
+
+stories.add("Rotate", () => {
+  return (
+    <div>
+      <p>
+        change rotateDegrees prop to degree value to rotate the knob
+      </p>
+      <Knob
+      
+      skin={textskin}
+        
+        style={{
+          width: "80px",
+          margin: "8rem",
+          height: "80px",
+          display: "inline-block"
+        }}
+        min={0}
+        max={100}
+        rotateDegrees={160}
+      />
+    </div>
+  );
+});
+
+
+stories.add("Rotate + Clamping", () => {
+  return (
+    <div>
+      <p>
+        Knob rotated by 180 degrees, with clampMin = 30 and clampMax = 330
+      </p>
+      <Knob
+      
+      skin={textskin}
+        
+        style={{
+          width: "80px",
+          margin: "8rem",
+          height: "80px",
+          display: "inline-block"
+        }}
+        min={0}
+        max={100}
+        rotateDegrees={180}
+        clampMin={20}
+        clampMax={340}
+      />
+    </div>
+  );
+});
+
+
+
 stories.add('Start value set, text skin', ()=>{
  
 
