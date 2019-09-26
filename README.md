@@ -1,6 +1,3 @@
-This is a fork of the great [React Rotary Knob](https://hugozap.github.io/react-rotary-knob) library by [hugozap](https://github.com/hugozap/react-rotary-knob).
-
-
 # 🎛 React Rotary Knob
 
 [Demo](https://hugozap.github.io/react-rotary-knob/storybook)
@@ -95,12 +92,6 @@ Props:
 | skin | Skin object| |
 | onStart | Called when the dragging starts |
 | onEnd | Called when the dragging ends |
-
-
-added Props in this fork:
-
-| Prop | Description | Default Value |
-|-----|--------------|----|
 | clampMin | degree value to move the starting point of the active area of the knob away from the center | 0 |
 | clampMax | degree value to move the end point of the active area of the knob away from the center | 360 |
 | rotateDegrees | degree value to rotate the knob component to have the starting / end points at a different position | 0 (zero is at top |
