@@ -48,6 +48,9 @@ type Skin = {
 type KnobProps = {
   value: ?number,
   defaultValue: ?number,
+  clampMin: ?number,
+  clampMax: ?number,
+  rotateDegrees: ?number,
   min: number,
   max: number,
   skin: Skin,
@@ -101,9 +104,12 @@ class Knob extends Component<KnobProps, KnobState> {
   static defaultProps = {
     min: 0,
     max: 100,
-    onChange: function() {},
-    onStart:function() {},
-    onEnd: function () {},
+    clampMax: 360,
+    clampMin: 0,
+    rotateDegrees: 0,
+    onChange: function () { },
+    onStart: function () { },
+    onEnd: function () { },
     skin: defaultSkin,
     format: (val: number) => {
       return val.toFixed(0);
@@ -113,6 +119,45 @@ class Knob extends Component<KnobProps, KnobState> {
     defaultValue: 0,
     step: 1
   };
+
+  // returns angles between 0 and 360 for values lower 0 or greater 360
+  normalizeAngle(angle: number): number {
+    if (angle < 0) {
+      //E.g -1 turns 359
+      return angle + 360
+    } else if (angle > 360) {
+      return angle - 360
+    }
+    return angle
+  }
+
+  // converts a value to an angle for the knob respecting the additional rotateDegrees prop
+  convertValueToAngle(value: number): number {
+    const angle = (this.scale(value) + this.props.rotateDegrees) % 360;
+    return this.normalizeAngle(angle);
+  }
+
+
+  // converts an angle to a value for the knob respecting the additional rotateDegrees prop
+  convertAngleToValue(angle: number): number {
+    const angle2 = angle - this.props.rotateDegrees;
+    return this.scale.invert(this.normalizeAngle(angle2))
+  }
+
+  setupScaling(min, max, clampMin, clampMax) {
+    // scaling of min/max to degree values needs to be swapped when turning the knob by 180 degree, to have the minimum values on the left side
+    if (this.props.rotateDegrees < 270 && this.props.rotateDegrees > 90) {
+      this.scale = scaleLinear()
+        .domain([min, max])
+        .range([clampMin, clampMax]);
+    } else {
+      this.scale = scaleLinear()
+        .domain([max, min])
+        .range([clampMax, clampMin]);
+    }
+    this.scale.clamp(true);
+  }
+
   componentDidMount() {
     if (this.props.value == null) {
       /**
@@ -140,9 +185,7 @@ class Knob extends Component<KnobProps, KnobState> {
     const nmax = nextProps.max;
 
     if (pmin != nmin || pmax != nmax) {
-      this.scale = scaleLinear()
-        .domain([nmin, nmax])
-        .range([0, 359]);
+      this.setupScaling(nmin, nmax, this.props.clampMin, this.props.clampMax)
     }
   }
 
@@ -158,7 +201,7 @@ class Knob extends Component<KnobProps, KnobState> {
 
   onAngleChanged(angle: number) {
     //Calculate domain value
-    let domainValue = this.scale.invert(angle);
+    let domainValue = this.convertAngleToValue(angle);
     if (!this.controlled) {
       /**
        * If the mode is 'uncontrolled' we need to update our local state
@@ -191,7 +234,7 @@ class Knob extends Component<KnobProps, KnobState> {
 
     function started() {
       let value = self.getValue();
-      const initialAngle = self.scale(value);
+      const initialAngle = self.convertValueToAngle(value);
       vbox = elem.node().getBoundingClientRect();
       elem.classed("dragging", true);
       self.props.onStart();
@@ -203,6 +246,7 @@ class Knob extends Component<KnobProps, KnobState> {
       let startAngle = utils.getAngleForPoint(startPos.x, startPos.y);
       let lastPos = startPos;
       let lastAngle = utils.getAngleForPoint(lastPos.x, lastPos.y);
+
       //in precise mode, we won't monitor angle change unless the distance > unlockDistance
       let monitoring = false;
       self.setState({
@@ -239,7 +283,6 @@ class Knob extends Component<KnobProps, KnobState> {
 
         lastPos = currentPos;
         let finalAngle = initialAngle + deltaAngle;
-
         if (finalAngle < 0) {
           //E.g -1 turns 359
           finalAngle += 360;
@@ -288,16 +331,14 @@ class Knob extends Component<KnobProps, KnobState> {
     const dragInstance = drag();
     //Change the container to the element itself so the
     //event.x and y are relative to the element , not its parent
-    dragInstance.container(function() {
+    dragInstance.container(function () {
       return elem.node();
     });
     elem.call(dragInstance.on("start", started));
   }
 
   componentWillMount() {
-    this.scale = scaleLinear()
-      .domain([this.props.min, this.props.max])
-      .range([0, 360]);
+    this.setupScaling(this.props.min, this.props.max, this.props.clampMin, this.props.clampMax)
   }
 
   onFormControlChange(newVal: number) {
@@ -317,6 +358,9 @@ class Knob extends Component<KnobProps, KnobState> {
       defaultValue,
       min,
       max,
+      rotateDegrees,
+      clampMax,
+      clampMin,
       onChange,
       onStart,
       onEnd,
@@ -329,7 +373,7 @@ class Knob extends Component<KnobProps, KnobState> {
     } = this.props;
 
     const currentValue: number = this.getValue();
-    const angle = this.scale(currentValue);
+    const angle = this.convertValueToAngle(currentValue);
 
     const styles = {
       container: Object.assign(
@@ -402,7 +446,7 @@ class Knob extends Component<KnobProps, KnobState> {
               selector="#knob"
               transform={`$ORIGINAL rotate(${angle}, ${skin.knobX}, ${
                 skin.knobY
-              })`}
+                })`}
             />
             {skinElemUpdates}
           </SvgLoader>
