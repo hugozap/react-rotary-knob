@@ -5418,6 +5418,49 @@ var Knob = function (_Component) {
   }
 
   _createClass(Knob, [{
+    key: "normalizeAngle",
+
+
+    // returns angles between 0 and 360 for values lower 0 or greater 360
+    value: function normalizeAngle(angle) {
+      if (angle < 0) {
+        //E.g -1 turns 359
+        return angle + 360;
+      } else if (angle > 360) {
+        return angle - 360;
+      }
+      return angle;
+    }
+
+    // converts a value to an angle for the knob respecting the additional rotateDegrees prop
+
+  }, {
+    key: "convertValueToAngle",
+    value: function convertValueToAngle(value) {
+      var angle = (this.scale(value) + this.props.rotateDegrees) % 360;
+      return this.normalizeAngle(angle);
+    }
+
+    // converts an angle to a value for the knob respecting the additional rotateDegrees prop
+
+  }, {
+    key: "convertAngleToValue",
+    value: function convertAngleToValue(angle) {
+      var angle2 = angle - this.props.rotateDegrees;
+      return this.scale.invert(this.normalizeAngle(angle2));
+    }
+  }, {
+    key: "setupScaling",
+    value: function setupScaling(min, max, clampMin, clampMax) {
+      // scaling of min/max to degree values needs to be swapped when turning the knob by 180 degree, to have the minimum values on the left side
+      if (this.props.rotateDegrees < 270 && this.props.rotateDegrees > 90) {
+        this.scale = (0, _d3Scale.scaleLinear)().domain([min, max]).range([clampMin, clampMax]);
+      } else {
+        this.scale = (0, _d3Scale.scaleLinear)().domain([max, min]).range([clampMax, clampMin]);
+      }
+      this.scale.clamp(true);
+    }
+  }, {
     key: "componentDidMount",
     value: function componentDidMount() {
       if (this.props.value == null) {
@@ -5446,7 +5489,7 @@ var Knob = function (_Component) {
       var nmax = nextProps.max;
 
       if (pmin != nmin || pmax != nmax) {
-        this.scale = (0, _d3Scale.scaleLinear)().domain([nmin, nmax]).range([0, 359]);
+        this.setupScaling(nmin, nmax, this.props.clampMin, this.props.clampMax);
       }
     }
   }, {
@@ -5465,7 +5508,7 @@ var Knob = function (_Component) {
     key: "onAngleChanged",
     value: function onAngleChanged(angle) {
       //Calculate domain value
-      var domainValue = this.scale.invert(angle);
+      var domainValue = this.convertAngleToValue(angle);
       if (!this.controlled) {
         /**
          * If the mode is 'uncontrolled' we need to update our local state
@@ -5500,7 +5543,7 @@ var Knob = function (_Component) {
 
       function started() {
         var value = self.getValue();
-        var initialAngle = self.scale(value);
+        var initialAngle = self.convertValueToAngle(value);
         vbox = elem.node().getBoundingClientRect();
         elem.classed("dragging", true);
         self.props.onStart();
@@ -5512,6 +5555,7 @@ var Knob = function (_Component) {
         var startAngle = _utils2.default.getAngleForPoint(startPos.x, startPos.y);
         var lastPos = startPos;
         var lastAngle = _utils2.default.getAngleForPoint(lastPos.x, lastPos.y);
+
         //in precise mode, we won't monitor angle change unless the distance > unlockDistance
         var monitoring = false;
         self.setState(_extends({}, self.state, {
@@ -5545,7 +5589,6 @@ var Knob = function (_Component) {
 
           lastPos = currentPos;
           var finalAngle = initialAngle + deltaAngle;
-
           if (finalAngle < 0) {
             //E.g -1 turns 359
             finalAngle += 360;
@@ -5601,7 +5644,7 @@ var Knob = function (_Component) {
   }, {
     key: "componentWillMount",
     value: function componentWillMount() {
-      this.scale = (0, _d3Scale.scaleLinear)().domain([this.props.min, this.props.max]).range([0, 360]);
+      this.setupScaling(this.props.min, this.props.max, this.props.clampMin, this.props.clampMax);
     }
   }, {
     key: "onFormControlChange",
@@ -5625,6 +5668,9 @@ var Knob = function (_Component) {
           defaultValue = _props.defaultValue,
           min = _props.min,
           max = _props.max,
+          rotateDegrees = _props.rotateDegrees,
+          clampMax = _props.clampMax,
+          clampMin = _props.clampMin,
           onChange = _props.onChange,
           onStart = _props.onStart,
           onEnd = _props.onEnd,
@@ -5633,10 +5679,10 @@ var Knob = function (_Component) {
           format = _props.format,
           preciseMode = _props.preciseMode,
           unlockDistance = _props.unlockDistance,
-          rest = _objectWithoutProperties(_props, ["value", "defaultValue", "min", "max", "onChange", "onStart", "onEnd", "skin", "style", "format", "preciseMode", "unlockDistance"]);
+          rest = _objectWithoutProperties(_props, ["value", "defaultValue", "min", "max", "rotateDegrees", "clampMax", "clampMin", "onChange", "onStart", "onEnd", "skin", "style", "format", "preciseMode", "unlockDistance"]);
 
       var currentValue = this.getValue();
-      var angle = this.scale(currentValue);
+      var angle = this.convertValueToAngle(currentValue);
 
       var styles = {
         container: Object.assign({}, {
@@ -5727,6 +5773,9 @@ var Knob = function (_Component) {
 Knob.defaultProps = {
   min: 0,
   max: 100,
+  clampMax: 360,
+  clampMin: 0,
+  rotateDegrees: 0,
   onChange: function onChange() {},
   onStart: function onStart() {},
   onEnd: function onEnd() {},
