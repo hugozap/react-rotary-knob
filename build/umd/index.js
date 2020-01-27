@@ -4750,17 +4750,16 @@ var RotateView = function (_Component) {
     value: function componentDidMount() {
       this.controlId = _uuid2.default.v4();
       this.controlSelector = ".rotate-controls-" + this.controlId;
-      this.renderControls(this.props);
-    }
-  }, {
-    key: "componentWillReceiveProps",
-    value: function componentWillReceiveProps(nextProps) {
-      this.renderControls(nextProps);
     }
   }, {
     key: "componentWillUnmount",
     value: function componentWillUnmount() {
       this.clearControls();
+    }
+  }, {
+    key: "getDerivedStateFromProps",
+    value: function getDerivedStateFromProps(props) {
+      this.renderControls(props);
     }
   }, {
     key: "renderControls",
@@ -5437,7 +5436,7 @@ var Knob = function (_Component) {
   }, {
     key: "convertValueToAngle",
     value: function convertValueToAngle(value) {
-      var angle = (this.scale(value) + this.props.rotateDegrees) % 360;
+      var angle = (this.getScale()(value) + this.props.rotateDegrees) % 360;
       return this.normalizeAngle(angle);
     }
 
@@ -5447,18 +5446,22 @@ var Knob = function (_Component) {
     key: "convertAngleToValue",
     value: function convertAngleToValue(angle) {
       var angle2 = angle - this.props.rotateDegrees;
-      return this.scale.invert(this.normalizeAngle(angle2));
+      return this.getScale().invert(this.normalizeAngle(angle2));
     }
   }, {
-    key: "setupScaling",
-    value: function setupScaling(min, max, clampMin, clampMax) {
-      // scaling of min/max to degree values needs to be swapped when turning the knob by 180 degree, to have the minimum values on the left side
-      if (this.props.rotateDegrees < 270 && this.props.rotateDegrees > 90) {
-        this.scale = (0, _d3Scale.scaleLinear)().domain([min, max]).range([clampMin, clampMax]);
-      } else {
-        this.scale = (0, _d3Scale.scaleLinear)().domain([max, min]).range([clampMax, clampMin]);
+    key: "getScale",
+    value: function getScale() {
+      // Memoize scale so it's not recalculated everytime
+      if (!this.scaleProps || !(this.scaleProps.min === this.props.min && this.scaleProps.max === this.props.max && this.scaleProps.clampMin === this.props.clampMin && this.scaleProps.clampMax === this.props.clampMax)) {
+        if (this.props.rotateDegrees < 270 && this.props.rotateDegrees > 90) {
+          this.scale = (0, _d3Scale.scaleLinear)().domain([this.props.min, this.props.max]).range([this.props.clampMin, this.props.clampMax]);
+        } else {
+          this.scale = (0, _d3Scale.scaleLinear)().domain([this.props.max, this.props.min]).range([this.props.clampMax, this.props.clampMin]);
+        }
+        this.scale.clamp(true);
+        this.scaleProps = { min: this.props.min, max: this.props.max, clampMin: this.props.clampMin, clampMax: this.props.clampMax };
       }
-      this.scale.clamp(true);
+      return this.scale;
     }
   }, {
     key: "componentDidMount",
@@ -5478,19 +5481,6 @@ var Knob = function (_Component) {
         this.controlled = true;
       }
       this.setupDragging((0, _d3Selection.select)(this.container));
-    }
-  }, {
-    key: "componentWillReceiveProps",
-    value: function componentWillReceiveProps(nextProps) {
-      //should recalculate scale?
-      var pmin = this.props.min;
-      var pmax = this.props.max;
-      var nmin = nextProps.min;
-      var nmax = nextProps.max;
-
-      if (pmin != nmin || pmax != nmax) {
-        this.setupScaling(nmin, nmax, this.props.clampMin, this.props.clampMax);
-      }
     }
   }, {
     key: "saveRef",
@@ -5642,11 +5632,6 @@ var Knob = function (_Component) {
       elem.call(dragInstance.on("start", started));
     }
   }, {
-    key: "componentWillMount",
-    value: function componentWillMount() {
-      this.setupScaling(this.props.min, this.props.max, this.props.clampMin, this.props.clampMax);
-    }
-  }, {
     key: "onFormControlChange",
     value: function onFormControlChange(newVal) {
       if (!this.controlled) {
@@ -5755,7 +5740,6 @@ var Knob = function (_Component) {
             skinElemUpdates
           )
         ),
-        this.state.svgRef && _react2.default.createElement(_RotateView2.default, { svg: this.state.svgRef, angle: angle }),
         this.state.dragging && this.props.preciseMode && _react2.default.createElement(_KnobVisualHelpers.KnobVisualHelpers, {
           svgRef: this.state.svgRef,
           radius: this.state.dragDistance,
