@@ -37,15 +37,7 @@ class KnobVisualHelpers extends React.Component<
     valueMarkerY: 0
   };
 
-  componentDidMount() {
-    this.recalculateContainerPosition(this.props);
-  }
-
-  componentWillReceiveProps(nextProps: KnobVisualHelpersProps) {
-    this.recalculateContainerPosition(nextProps);
-  }
-
-  recalculateContainerPosition(props: KnobVisualHelpersProps) {
+  getDerivedStateFromProps(props: KnobVisualHelpersProps) {
     //Calculate position
     const vbox = props.svgRef.getBoundingClientRect();
     const halfWidth = vbox.width / 2;

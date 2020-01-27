@@ -4852,18 +4852,8 @@ var KnobVisualHelpers = function (_React$Component) {
   }
 
   _createClass(KnobVisualHelpers, [{
-    key: "componentDidMount",
-    value: function componentDidMount() {
-      this.recalculateContainerPosition(this.props);
-    }
-  }, {
-    key: "componentWillReceiveProps",
-    value: function componentWillReceiveProps(nextProps) {
-      this.recalculateContainerPosition(nextProps);
-    }
-  }, {
-    key: "recalculateContainerPosition",
-    value: function recalculateContainerPosition(props) {
+    key: "getDerivedStateFromProps",
+    value: function getDerivedStateFromProps(props) {
       //Calculate position
       var vbox = props.svgRef.getBoundingClientRect();
       var halfWidth = vbox.width / 2;
