@@ -89,6 +89,7 @@ function printDebugValues(obj) {
 class Knob extends Component<KnobProps, KnobState> {
   container: any;
   scale: any;
+  scaleProps: {min: number, max: number, clampMin: number, clampMax: number}
   inputRef: any;
   controlled: boolean;
 
@@ -133,29 +134,32 @@ class Knob extends Component<KnobProps, KnobState> {
 
   // converts a value to an angle for the knob respecting the additional rotateDegrees prop
   convertValueToAngle(value: number): number {
-    const angle = (this.scale(value) + this.props.rotateDegrees) % 360;
+    const angle = (this.getScale()(value) + this.props.rotateDegrees) % 360;
     return this.normalizeAngle(angle);
   }
-
 
   // converts an angle to a value for the knob respecting the additional rotateDegrees prop
   convertAngleToValue(angle: number): number {
     const angle2 = angle - this.props.rotateDegrees;
-    return this.scale.invert(this.normalizeAngle(angle2))
+    return this.getScale().invert(this.normalizeAngle(angle2))
   }
 
-  setupScaling(min, max, clampMin, clampMax) {
-    // scaling of min/max to degree values needs to be swapped when turning the knob by 180 degree, to have the minimum values on the left side
-    if (this.props.rotateDegrees < 270 && this.props.rotateDegrees > 90) {
-      this.scale = scaleLinear()
-        .domain([min, max])
-        .range([clampMin, clampMax]);
-    } else {
-      this.scale = scaleLinear()
-        .domain([max, min])
-        .range([clampMax, clampMin]);
+  getScale() {
+    // Memoize scale so it's not recalculated everytime
+    if (!this.scaleProps || !(this.scaleProps.min === this.props.min && this.scaleProps.max === this.props.max && this.scaleProps.clampMin === this.props.clampMin && this.scaleProps.clampMax === this.props.clampMax)) {
+      if (this.props.rotateDegrees < 270 && this.props.rotateDegrees > 90) {
+        this.scale = scaleLinear()
+          .domain([this.props.min, this.props.max])
+          .range([this.props.clampMin, this.props.clampMax]);
+      } else {
+        this.scale = scaleLinear()
+          .domain([this.props.max, this.props.min])
+          .range([this.props.clampMax, this.props.clampMin]);
+      }
+      this.scale.clamp(true);
+      this.scaleProps = {min: this.props.min, max: this.props.max, clampMin: this.props.clampMin, clampMax: this.props.clampMax}
     }
-    this.scale.clamp(true);
+    return this.scale
   }
 
   componentDidMount() {
@@ -175,18 +179,6 @@ class Knob extends Component<KnobProps, KnobState> {
       this.controlled = true;
     }
     this.setupDragging(select(this.container));
-  }
-
-  componentWillReceiveProps(nextProps: KnobProps) {
-    //should recalculate scale?
-    const pmin = this.props.min;
-    const pmax = this.props.max;
-    const nmin = nextProps.min;
-    const nmax = nextProps.max;
-
-    if (pmin != nmin || pmax != nmax) {
-      this.setupScaling(nmin, nmax, this.props.clampMin, this.props.clampMax)
-    }
   }
 
   saveRef(elem: any) {
@@ -337,10 +329,6 @@ class Knob extends Component<KnobProps, KnobState> {
     elem.call(dragInstance.on("start", started));
   }
 
-  componentWillMount() {
-    this.setupScaling(this.props.min, this.props.max, this.props.clampMin, this.props.clampMax)
-  }
-
   onFormControlChange(newVal: number) {
     if (!this.controlled) {
       /**
@@ -451,9 +439,6 @@ class Knob extends Component<KnobProps, KnobState> {
             {skinElemUpdates}
           </SvgLoader>
         </div>
-        {this.state.svgRef && (
-          <RotateView svg={this.state.svgRef} angle={angle} />
-        )}
 
         {this.state.dragging &&
           this.props.preciseMode && (

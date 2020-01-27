@@ -22,14 +22,14 @@ type RotateViewProps = {
     componentDidMount() {
       this.controlId = uuid.v4();
       this.controlSelector = ".rotate-controls-" + this.controlId;
-      this.renderControls(this.props);
-    }
-    componentWillReceiveProps(nextProps: RotateViewProps) {
-      this.renderControls(nextProps);
     }
   
     componentWillUnmount() {
       this.clearControls();
+    }
+
+    getDerivedStateFromProps(props) {
+      this.renderControls(props)
     }
   
     renderControls(props: RotateViewProps) {

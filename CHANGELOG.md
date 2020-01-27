@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 1.1.8
+
+- Stop using deprecated React methods to avoid warnings with recent versions of React (issue #15)
+
 ## 1.1.0
 
 - Change react-samy-svg to react-svgmt
