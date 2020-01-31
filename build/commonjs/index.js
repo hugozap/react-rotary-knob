@@ -4757,16 +4757,6 @@ var KnobVisualHelpers = function (_React$Component) {
     }
   }], [{
     key: "getDerivedStateFromProps",
-
-
-    // componentDidMount() {
-    //   this.recalculateContainerPosition(this.props);
-    // }
-
-    // componentWillReceiveProps(nextProps: KnobVisualHelpersProps) {
-    //   this.recalculateContainerPosition(nextProps);
-    // }
-
     value: function getDerivedStateFromProps(props, state) {
       //Calculate position
       var vbox = props.svgRef.getBoundingClientRect();
