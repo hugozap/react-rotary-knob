@@ -37,7 +37,15 @@ class KnobVisualHelpers extends React.Component<
     valueMarkerY: 0
   };
 
-  getDerivedStateFromProps(props: KnobVisualHelpersProps) {
+  // componentDidMount() {
+  //   this.recalculateContainerPosition(this.props);
+  // }
+
+  // componentWillReceiveProps(nextProps: KnobVisualHelpersProps) {
+  //   this.recalculateContainerPosition(nextProps);
+  // }
+
+  static getDerivedStateFromProps(props: KnobVisualHelpersProps, state: KnobVisualHelpersState) {
     //Calculate position
     const vbox = props.svgRef.getBoundingClientRect();
     const halfWidth = vbox.width / 2;
@@ -49,13 +57,13 @@ class KnobVisualHelpers extends React.Component<
     const valueMarkerY =
       props.radius * Math.sin(utils.toRadians(props.valueAngle - 90));
 
-    this.setState({
-      ...this.state,
+    return {
+      ...state,
       centerX: vbox.left + halfWidth,
       centerY: vbox.top + halfWidth,
       valueMarkerX,
       valueMarkerY
-    });
+    };
   }
 
   render() {

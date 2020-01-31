@@ -4703,25 +4703,6 @@ var KnobVisualHelpers = function (_React$Component) {
   }
 
   _createClass(KnobVisualHelpers, [{
-    key: "getDerivedStateFromProps",
-    value: function getDerivedStateFromProps(props) {
-      //Calculate position
-      var vbox = props.svgRef.getBoundingClientRect();
-      var halfWidth = vbox.width / 2;
-
-      //Calculate current angle segment end point
-      //Note: Not sure why we need to substract 90 here
-      var valueMarkerX = props.radius * Math.cos(_utils2.default.toRadians(props.valueAngle - 90));
-      var valueMarkerY = props.radius * Math.sin(_utils2.default.toRadians(props.valueAngle - 90));
-
-      this.setState(_extends({}, this.state, {
-        centerX: vbox.left + halfWidth,
-        centerY: vbox.top + halfWidth,
-        valueMarkerX: valueMarkerX,
-        valueMarkerY: valueMarkerY
-      }));
-    }
-  }, {
     key: "render",
     value: function render() {
       var markCircleColor = this.props.minimumDragDistance <= this.props.radius ? "green" : "grey";
@@ -4782,6 +4763,35 @@ var KnobVisualHelpers = function (_React$Component) {
           })
         )
       );
+    }
+  }], [{
+    key: "getDerivedStateFromProps",
+
+
+    // componentDidMount() {
+    //   this.recalculateContainerPosition(this.props);
+    // }
+
+    // componentWillReceiveProps(nextProps: KnobVisualHelpersProps) {
+    //   this.recalculateContainerPosition(nextProps);
+    // }
+
+    value: function getDerivedStateFromProps(props, state) {
+      //Calculate position
+      var vbox = props.svgRef.getBoundingClientRect();
+      var halfWidth = vbox.width / 2;
+
+      //Calculate current angle segment end point
+      //Note: Not sure why we need to substract 90 here
+      var valueMarkerX = props.radius * Math.cos(_utils2.default.toRadians(props.valueAngle - 90));
+      var valueMarkerY = props.radius * Math.sin(_utils2.default.toRadians(props.valueAngle - 90));
+
+      return _extends({}, state, {
+        centerX: vbox.left + halfWidth,
+        centerY: vbox.top + halfWidth,
+        valueMarkerX: valueMarkerX,
+        valueMarkerY: valueMarkerY
+      });
     }
   }]);
 
