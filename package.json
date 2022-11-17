@@ -16,7 +16,7 @@
     "form"
   ],
   "peerDependencies": {
-    "react": "^16.3.0"
+    "react": "^16.3.0 || ^17.0"
   },
   "dependencies": {
     "d3-drag": "^1.2.1",
