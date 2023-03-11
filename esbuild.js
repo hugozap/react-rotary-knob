@@ -5,13 +5,10 @@ const fs = require('fs');
 
 build({
   entryPoints: ['src/index.tsx'],
-  outfile: 'build/index.js',
+  outdir: 'build',
   bundle: true,
-  loader: {
-    '.js': 'jsx',
-    '.jsx': 'jsx',
-  },
-  plugins: [
-
-  ],
+  minify: true,
+  sourcemap: true,
+  target:['esnext'],
+  format: 'cjs',
 }).catch(() => process.exit(1));
