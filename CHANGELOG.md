@@ -1,4 +1,6 @@
 # CHANGELOG
+## 2.0.0
+Update to React version 18.2.0
 
 ## 1.1.8
 

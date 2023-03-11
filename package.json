@@ -1,6 +1,6 @@
 {
   "name": "react-rotary-knob",
-  "version": "1.1.8",
+  "version": "2.0.0",
   "description": "Skinnable Rotary Knob for React",
   "main": "build/commonjs/index.js",
   "repository": {
@@ -35,8 +35,7 @@
     "build:umd": "webpack --config=webpack.config.umd.js",
     "storybook": "start-storybook -p 9001 -c .storybook",
     "buildstorybook": "build-storybook -c .storybook -o ./docs/storybook",
-    "prepublishOnly": "yarn build && yarn",
-    "release": "yarn build && yarn buildstorybook && yarn version && git push origin master"
+    "prepublishOnly": "npm run build"
   },
   "author": {
     "name": "Hugo Zapata"
@@ -66,8 +65,8 @@
     "flow-bin": "^0.64.0",
     "jest": "^22.4.3",
     "raw-loader": "^0.5.1",
-    "react": "^16.3.0",
-    "react-dom": "^16.3.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "react-test-renderer": "^16.2.0",
     "rimraf": "^2.6.2",
     "webpack": "^2.6.1",
