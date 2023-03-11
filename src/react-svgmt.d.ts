@@ -1,7 +1,7 @@
 declare module "react-svgmt" {
     interface SvgLoaderProps {
       svgXML: string;
-      onSVGReady?: () => void;
+      onSVGReady?: (element:SVGSVGElement) => void;
       pathPrefix?: string;
       children?: React.ReactNode;
       style?: React.CSSProperties;

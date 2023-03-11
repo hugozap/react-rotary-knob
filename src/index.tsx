@@ -9,7 +9,7 @@ import React, {
   ReactElement,
   RefObject,
 } from "react";
-import * as d3 from 'd3';
+import * as d3 from "d3";
 import utils from "./utils";
 import { SvgLoader, SvgProxy } from "react-svgmt";
 import defaultSkin from "./knobdefaultskin";
@@ -17,10 +17,12 @@ import { KnobVisualHelpers } from "./helpers/KnobVisualHelpers";
 import InternalInput from "./InternalInput";
 import { D3DragEvent, drag } from "d3-drag";
 import { scaleLinear } from "d3-scale";
-import type { Point, AttributeSetValue, UpdateElement } from "./Types";
+import type {
+  Point,
+  AttributeSetValue,
+  UpdateElement,
+} from "./Types";
 import { select } from "d3-selection";
-;
-
 /**
  * A skin consists of the svg code
  * and the knob element centerx and y (knobX, knobY)
@@ -54,7 +56,7 @@ type KnobProps = {
 type KnobState = {
   //add optional prop1 string
 
-  svgRef: RefObject<any> | null;
+  svgRef?: RefObject<any>;
   dragging: boolean;
   dragDistance: number;
   mousePos: Point;
@@ -75,6 +77,19 @@ function printDebugValues(obj: any) {
  * Generic knob component
  */
 class Knob extends Component<KnobProps, KnobState> {
+  constructor(props) {
+    super(props);
+    this.inputRef = React.createRef();
+    this.scaleProps = {
+      min: props.min,
+      max: props.max,
+      clampMin: props.clampMin,
+      clampMax: props.clampMax,
+    };
+    this.scale = scaleLinear().domain([props.min, props.max]).range([0, 360]);
+    this.controlled = props.value !== undefined;
+  }
+
   container: any;
   scale: any;
   scaleProps: { min: number; max: number; clampMin: number; clampMax: number };
@@ -82,7 +97,7 @@ class Knob extends Component<KnobProps, KnobState> {
   controlled: boolean;
 
   state: KnobState = {
-    svgRef: null,
+    svgRef: undefined,
     dragging: false,
     dragDistance: 0,
     mousePos: { x: 0, y: 0 },
@@ -223,15 +238,6 @@ class Knob extends Component<KnobProps, KnobState> {
     const cx = vbox.width / 2;
     const cy = vbox.height / 2;
 
-    //update mouse state on mouse move
-    elem.on("mousemove", function (event: MouseEvent) {
-      self.setState({
-        ...self.state,
-        mousePos: { x: event.clientX, y: event.clientY },
-      });
-    });
-
-
     function started(event: D3DragEvent<any, any, any>) {
       let value = self.getValue();
       const initialAngle = self.convertValueToAngle(value);
@@ -253,9 +259,13 @@ class Knob extends Component<KnobProps, KnobState> {
         ...self.state,
         dragging: true,
         dragDistance: 0,
+        mousePos: {
+          x: event.sourceEvent.clientX,
+          y: event.sourceEvent.clientY,
+        }
       });
 
-      function dragged() {
+      function dragged(event) {
         let currentPos = { x: event.x - cx, y: event.y - cy };
         const distanceFromCenter = Math.sqrt(
           Math.pow(currentPos.x, 2) + Math.pow(currentPos.y, 2)
@@ -285,19 +295,6 @@ class Knob extends Component<KnobProps, KnobState> {
         } else if (finalAngle > 360) {
           finalAngle -= 360;
         }
-
-        // printDebugValues({
-        //   cx,
-        //   cy,
-        //   initialAngle,
-        //   startAngle,
-        //   startPos,
-        //   currentPos,
-        //   currentAngle,
-        //   deltaAngle,
-        //   finalAngle,
-        // })
-
         if (monitoring) {
           self.onAngleChanged(finalAngle);
         }
@@ -314,7 +311,6 @@ class Knob extends Component<KnobProps, KnobState> {
         elem.classed("dragging", false);
         self.setState({ ...self.state, dragging: false });
         self.props.onEnd();
-
         //focus input so it can be moved with arrows
         if (self.inputRef.current) {
           self.inputRef.current.focus();
@@ -360,7 +356,7 @@ class Knob extends Component<KnobProps, KnobState> {
       preciseMode,
       unlockDistance,
       ...rest
-    }= this.props;
+    } = this.props;
 
     const currentValue: number = this.getValue();
     const angle = this.convertValueToAngle(currentValue);
@@ -440,7 +436,7 @@ class Knob extends Component<KnobProps, KnobState> {
 
         {this.state.dragging && this.props.preciseMode && (
           <KnobVisualHelpers
-            svgRef={this.state.svgRef}
+            svgRef={this.state.svgRef!}
             radius={this.state.dragDistance}
             mousePos={this.state.mousePos}
             minimumDragDistance={this.props.unlockDistance}

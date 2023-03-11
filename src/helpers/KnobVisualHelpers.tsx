@@ -1,4 +1,4 @@
-import React from "react";
+import React, { RefObject } from "react";
 import HelpersOverlay from "./HelpersOverlay";
 import DrawCircle from "./DrawCircle";
 import DrawLine from "./DrawLine";
@@ -11,7 +11,7 @@ import utils from "../utils";
  * Precision mode visual helpers
  */
 type KnobVisualHelpersProps = {
-  svgRef: any;
+  svgRef: RefObject<any>;
   radius: number;
   minimumDragDistance: number;
   valueAngle: number;
@@ -41,7 +41,7 @@ export class KnobVisualHelpers extends React.Component<
     state: KnobVisualHelpersState
   ): KnobVisualHelpersState {
     //Calculate position
-    const vbox = props.svgRef.getBoundingClientRect();
+    const vbox = props.svgRef.current.getBoundingClientRect();
     const halfWidth = vbox.width / 2;
 
     //Calculate current angle segment end point
