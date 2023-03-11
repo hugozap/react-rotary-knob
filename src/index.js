@@ -240,13 +240,14 @@ class Knob extends Component<KnobProps, KnobState> {
 
       //in precise mode, we won't monitor angle change unless the distance > unlockDistance
       let monitoring = false;
+      console.log('**DEBUG event**', d3.event.clientX, d3.event.clientY);
       self.setState({
         ...self.state,
         dragging: true,
         dragDistance: 0,
         mousePos: {
-          x: event.sourceEvent.clientX,
-          y: event.sourceEvent.clientY
+          x: d3.event.clientX,
+          y: d3.event.clientY
         }
       });
 
