@@ -1,6 +1,9 @@
+
+import { UpdateElement} from './types'
 export default  {
     knobX: 71,
     knobY: 71,
+    updateAttributes:[],
     svg:`
 
 <svg width="204px" height="204px" viewBox="0 0 204 204" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">

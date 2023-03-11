@@ -1,18 +1,17 @@
-// @flow
-import React, { Component } from "react";
-import type {Point} from '../Types'
+import React from "react";
+import { Point } from "../Types";
 
 /**
  * Draws a line from p1 to p2
  */
 
-
-type DrawLineProps = {
-  width: number,
-  color: ?string,
-  p1: Point,
-  p2: Point
-};
+interface DrawLineProps {
+  width?: number;
+  color?: string;
+  p1: Point;
+  p2: Point;
+  markerEnd?: string;
+}
 
 class DrawLine extends React.Component<DrawLineProps> {
   static defaultProps = {
@@ -27,7 +26,7 @@ class DrawLine extends React.Component<DrawLineProps> {
         y1={this.props.p1.y}
         x2={this.props.p2.x}
         y2={this.props.p2.y}
-        stroke={this.props.color}
+        stroke={color}
         strokeWidth={this.props.width}
         {...rest}
       />

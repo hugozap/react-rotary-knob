@@ -1,5 +1,4 @@
-// @flow
-import React, { Component } from "react";
+import React from "react";
 import HelpersOverlay from "./HelpersOverlay";
 import DrawCircle from "./DrawCircle";
 import DrawLine from "./DrawLine";
@@ -12,32 +11,35 @@ import utils from "../utils";
  * Precision mode visual helpers
  */
 type KnobVisualHelpersProps = {
-  svgRef: any,
-  radius: number,
-  minimumDragDistance: number,
-  valueAngle: number,
-  mousePos: Point
+  svgRef: any;
+  radius: number;
+  minimumDragDistance: number;
+  valueAngle: number;
+  mousePos: Point;
 };
 
 type KnobVisualHelpersState = {
-  centerX: number,
-  centerY: number,
-  valueMarkerX: number,
-  valueMarkerY: number
+  centerX: number;
+  centerY: number;
+  valueMarkerX: number;
+  valueMarkerY: number;
 };
 
-class KnobVisualHelpers extends React.Component<
+export class KnobVisualHelpers extends React.Component<
   KnobVisualHelpersProps,
   KnobVisualHelpersState
 > {
-  state = {
+  state: KnobVisualHelpersState = {
     centerX: 0,
     centerY: 0,
     valueMarkerX: 0,
-    valueMarkerY: 0
+    valueMarkerY: 0,
   };
 
-  static getDerivedStateFromProps(props: KnobVisualHelpersProps, state: KnobVisualHelpersState) {
+  static getDerivedStateFromProps(
+    props: KnobVisualHelpersProps,
+    state: KnobVisualHelpersState
+  ): KnobVisualHelpersState {
     //Calculate position
     const vbox = props.svgRef.getBoundingClientRect();
     const halfWidth = vbox.width / 2;
@@ -54,18 +56,19 @@ class KnobVisualHelpers extends React.Component<
       centerX: vbox.left + halfWidth,
       centerY: vbox.top + halfWidth,
       valueMarkerX,
-      valueMarkerY
+      valueMarkerY,
     };
   }
 
-  render() {
-    const markCircleColor =
+  render(): JSX.Element {
+    const markCircleColor: string =
       this.props.minimumDragDistance <= this.props.radius ? "green" : "grey";
-    const fillColor =
+    const fillColor: string =
       this.props.minimumDragDistance <= this.props.radius
         ? "#88E22D"
         : "#D8D8D8";
-    const minDistanceCueVisible = this.props.minimumDragDistance >= this.props.radius;
+    const minDistanceCueVisible: boolean =
+      this.props.minimumDragDistance >= this.props.radius;
 
     return (
       <HelpersOverlay>
@@ -98,29 +101,24 @@ class KnobVisualHelpers extends React.Component<
             cy={this.state.centerY}
           />
           {/* Minimum drag distance marker */}
-          {minDistanceCueVisible &&<DrawCircle
-            borderColor={markCircleColor}
-            fillColor={fillColor}
-            fillOpacity={0}
-            r={this.props.minimumDragDistance}
-            cx={this.state.centerX}
-            cy={this.state.centerY}
-            strokeDasharray="5, 5"
-          />}
+          {minDistanceCueVisible && (
+            <DrawCircle
+              borderColor={markCircleColor}
+              fillColor={fillColor}
+              fillOpacity={0}
+              r={this.props.minimumDragDistance}
+              cx={this.state.centerX}
+              cy={this.state.centerY}
+              strokeDasharray="5, 5"
+            />
+          )}
 
           {/* Line to mouse position */}
-          {/* <DrawLine
-            p1={{ x: this.state.centerX, y: this.state.centerY }}
-            p2={{ x: this.props.mousePos.x, y: this.props.mousePos.y }}
-            opacity={0.4}
-            strokeDasharray="5, 5"
-          /> */}
-          {/* Line to current value */}
           <DrawLine
             p1={{ x: this.state.centerX, y: this.state.centerY }}
             p2={{
               x: this.state.valueMarkerX + this.state.centerX,
-              y: this.state.valueMarkerY + this.state.centerY
+              y: this.state.valueMarkerY + this.state.centerY,
             }}
             markerEnd="url(#Triangle)"
           />
@@ -129,5 +127,3 @@ class KnobVisualHelpers extends React.Component<
     );
   }
 }
-
-export { KnobVisualHelpers };
