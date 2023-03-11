@@ -1,5 +1,4 @@
 
-import { UpdateElement} from './types'
 export default  {
     knobX: 71,
     knobY: 71,

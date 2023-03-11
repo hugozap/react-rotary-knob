@@ -1,5 +1,5 @@
 import React from "react";
-import { storiesOf } from "@storybook/react";
+import type { StoryFn } from '@storybook/react';
 import { action } from "@storybook/addon-actions";
 import { Knob } from "../src/index";
 import textskin from '../textskin'
