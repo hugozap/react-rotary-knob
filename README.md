@@ -1,4 +1,11 @@
-# 🎛 React Rotary Knob
+# 🎛 React Rotary Knob (React v18.2+)
+
+## Installation
+
+```bash
+npm install react-rotary-knob@latest
+```
+## Demos
 
 [Demo](https://hugozap.github.io/react-rotary-knob/storybook)
 
