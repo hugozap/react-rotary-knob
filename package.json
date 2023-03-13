@@ -1,6 +1,6 @@
 {
   "name": "react-rotary-knob",
-  "version": "3.0.2",
+  "version": "3.0.3",
   "description": "Skinnable Rotary Knob for React",
   "main": "build/index.js",
   "repository": {
