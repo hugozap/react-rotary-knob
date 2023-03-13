@@ -1,6 +1,6 @@
 {
   "name": "react-rotary-knob",
-  "version": "3.0.0",
+  "version": "3.0.2",
   "description": "Skinnable Rotary Knob for React",
   "main": "build/index.js",
   "repository": {
@@ -15,15 +15,12 @@
     "rotary",
     "form"
   ],
-  "peerDependencies": {
-    "react": "^16.3.0"
-  },
   "dependencies": {
     "d3-drag": "^3.0.0",
     "d3-scale": "^4.0.2",
     "d3-selection": "^3.0.0",
     "prop-types": "^15.6.0",
-    "react-svgmt": "^1.1.7",
+    "react-svgmt": "^2.0.2",
     "uuid": "^3.2.1"
   },
   "scripts": {
@@ -42,6 +39,9 @@
     "testMatch": [
       "**/__tests__/**/*-tests.js"
     ]
+  },
+  "peerDependencies": {
+    "react": "^18.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.21.0",

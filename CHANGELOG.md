@@ -1,5 +1,13 @@
 # CHANGELOG
-## 2.0.0
+
+# 3.0.2
+- Update depenendency to react-svgmt 2.0.2
+
+## 3.0.1
+
+- Fix peerDependencies to allow react 18
+
+## 3.0.0
 Update to React version 18.2.0
 
 ## 1.1.8
