@@ -1,5 +1,4 @@
-import React, { Component, CSSProperties, RefObject } from "react";
-
+import React, { CSSProperties, RefObject } from "react";
 
 interface InternalInputProps {
   min: number;
@@ -11,37 +10,35 @@ interface InternalInputProps {
   style?: CSSProperties;
 }
 
-//define component props
+const InternalInput: React.FC<InternalInputProps> = ({
+  value,
+  min,
+  max,
+  step = 1,
+  onChange,
+  inputRef,
+  style,
+  ...rest
+}) => {
+  const hideStyle: CSSProperties = {};
 
-
-class InternalInput extends React.Component<InternalInputProps> {
-  static defaultProps = {
-    step: 1,
+  const onValChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
+    onChange(Number(ev.target.value));
   };
 
-  render() {
-    const props = this.props;
-    const hideStyle: CSSProperties = {};
-
-    function onValChange(ev: React.ChangeEvent<HTMLInputElement>) {
-      props.onChange(Number(ev.target.value));
-    }
-
-    const { value, min, max, step, onChange, inputRef, style, ...rest } = props;
-    return (
-      <input
-        ref={inputRef}
-        value={value}
-        step={step}
-        onChange={onValChange}
-        style={{ ...hideStyle, ...style }}
-        type="range"
-        min={min}
-        max={max}
-        {...rest}
-      />
-    );
-  }
-}
+  return (
+    <input
+      ref={inputRef}
+      value={value}
+      step={step}
+      onChange={onValChange}
+      style={{ ...hideStyle, ...style }}
+      type="range"
+      min={min}
+      max={max}
+      {...rest}
+    />
+  );
+};
 
 export default InternalInput;

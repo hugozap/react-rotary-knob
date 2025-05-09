@@ -1,5 +1,11 @@
 # CHANGELOG
 
+# 4.0.0
+- Update to React version 19
+- Convert class components to functional components with hooks
+- Improve memoization and performance
+- Modernize internal code structure
+
 # 3.0.2
 - Update depenendency to react-svgmt 2.0.2
 

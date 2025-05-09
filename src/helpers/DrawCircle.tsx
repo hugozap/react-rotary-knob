@@ -1,4 +1,5 @@
 import React from "react";
+
 interface DrawCircleProps {
   r: number;
   borderColor?: string;
@@ -10,30 +11,27 @@ interface DrawCircleProps {
   strokeDasharray?: string;
 }
 
-class DrawCircle extends React.Component<DrawCircleProps> {
-  static defaultProps = {
-    borderColor: "black",
-    fillColor: "transparent",
-    borderWidth: 2,
-    fillOpacity: 1,
-  };
-  render() {
-    const { r, borderColor, fillColor, borderWidth, cx, cy, ...rest } =
-      this.props;
-    const d = this.props.r * 2;
-
-    return (
-      <circle
-        stroke={this.props.borderColor}
-        fill={this.props.fillColor}
-        fillOpacity={this.props.fillOpacity}
-        r={this.props.r}
-        cx={this.props.cx}
-        cy={this.props.cy}
-        {...rest}
-      />
-    );
-  }
-}
+const DrawCircle: React.FC<DrawCircleProps> = ({
+  r,
+  borderColor = "black",
+  fillColor = "transparent",
+  borderWidth = 2,
+  fillOpacity = 1,
+  cx,
+  cy,
+  ...rest
+}) => {
+  return (
+    <circle
+      stroke={borderColor}
+      fill={fillColor}
+      fillOpacity={fillOpacity}
+      r={r}
+      cx={cx}
+      cy={cy}
+      {...rest}
+    />
+  );
+};
 
 export default DrawCircle;

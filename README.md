@@ -1,4 +1,4 @@
-# 🎛 React Rotary Knob (React v18.2+)
+# 🎛 React Rotary Knob (React v19+)
 
 ## Installation
 
@@ -39,21 +39,25 @@ you need to store the value and use the `value` and `onChange`
 props to update it. This is the recommended usage.
 
 ```jsx
-class App extends React.Component {
+import React, { useState } from 'react';
+import { Knob } from 'react-rotary-knob';
 
-  state = {
-    value: 50
-  }
+const App = () => {
+  const [value, setValue] = useState(50);
 
-  changeValue(val) {
-    this.setState({value:val})
-  }
+  const changeValue = (val) => {
+    setValue(val);
+  };
 
-  render() {
-    return <Knob onChange={this.changeValue.bind(this)} min={0} max={100} value={this.state.value}/>
-     
-  }
-}
+  return (
+    <Knob 
+      onChange={changeValue} 
+      min={0} 
+      max={100} 
+      value={value}
+    />
+  );
+};
 ```
 
 ## Usage (Uncontrolled mode)
@@ -64,16 +68,23 @@ with the `defaultValue` prop. Use the `onChange` prop if you want to
 be notified when the value changes.
 
 ```jsx
-class App extends React.Component {
+import React from 'react';
+import { Knob } from 'react-rotary-knob';
 
-  changeValue(val) {
-   console.log('The value changed to '+val)
-  }
+const App = () => {
+  const changeValue = (val) => {
+    console.log('The value changed to ' + val);
+  };
 
-  render() {
-    return <Knob defaultValue={0} min={0} max={100} onChange={this.changeValue.bind(this)}  />
-  }
-}
+  return (
+    <Knob 
+      defaultValue={0} 
+      min={0} 
+      max={100} 
+      onChange={changeValue} 
+    />
+  );
+};
 ```
 ### Non-endless behavior
 
